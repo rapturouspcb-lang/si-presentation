@@ -93,7 +93,7 @@
 
   .subtitle {
     font-size: 1.4em !important;
-    color: #7b9dff !important;
+    color: #8ab4ff !important;
     margin-bottom: 5px;
   }
 
@@ -310,7 +310,7 @@
   <div class="ai-badge">AI-POWERED PRESENTATION</div>
   <h1>Signal Integrity</h1>
   <p class="subtitle">Understanding High-Speed Digital Design</p>
-  <p class="small-text" style="margin-top: 30px; color: #7b9dff;">Presented to: Rizwan</p>
+  <p class="small-text" style="margin-top: 30px; color: #8ab4ff;">Presented to: Rizwan</p>
   <p class="small-text" style="color: rgba(123,157,255,0.5);">Press Arrow Keys or Click Navigation to Continue</p>
 </div>
 
@@ -662,7 +662,7 @@
     </div>
   </div>
   <p class="subtitle" style="margin-top: 30px;">Thank You!</p>
-  <p class="small-text" style="color: #7b9dff;">Prepared for Rizwan</p>
+  <p class="small-text" style="color: #8ab4ff;">Prepared for Rizwan</p>
 </div>
 
 <!-- Navigation -->
@@ -836,7 +836,7 @@ function drawFace(ctx, x, y, size, type, t) {
     ctx.arc(x, y + r * 0.9 + bounce, r * 0.5, 1.15 * Math.PI, 1.85 * Math.PI);
     ctx.stroke();
     // Tear
-    ctx.fillStyle = '#4da8ff80';
+    ctx.fillStyle = '#6ec0ff';
     ctx.beginPath();
     ctx.arc(x + r * 0.8, y + r * 0.1 + bounce, r * 0.15, 0, Math.PI * 2);
     ctx.fill();
@@ -959,12 +959,12 @@ function drawGround(ctx, x, y, size) {
   ctx.lineTo(x + size, y);
   ctx.stroke();
   ctx.beginPath();
-  ctx.moveTo(x - size * 0.6, y + 3);
-  ctx.lineTo(x + size * 0.6, y + 3);
+  ctx.moveTo(x - size * 0.6, y + 4);
+  ctx.lineTo(x + size * 0.6, y + 4);
   ctx.stroke();
   ctx.beginPath();
-  ctx.moveTo(x - size * 0.3, y + 6);
-  ctx.lineTo(x + size * 0.3, y + 6);
+  ctx.moveTo(x - size * 0.3, y + 8);
+  ctx.lineTo(x + size * 0.3, y + 8);
   ctx.stroke();
 }
 
@@ -972,12 +972,12 @@ function drawVSource(ctx, x, y, r, label) {
   ctx.beginPath();
   ctx.arc(x, y, r, 0, Math.PI * 2);
   ctx.stroke();
-  ctx.font = '9px Share Tech Mono';
+  ctx.font = '11px Share Tech Mono';
   ctx.fillStyle = ctx.strokeStyle;
   ctx.textAlign = 'center';
   ctx.fillText('+', x, y - 2);
-  ctx.fillText('−', x, y + 8);
-  if (label) ctx.fillText(label, x, y - r - 4);
+  ctx.fillText('−', x, y + 10);
+  if (label) { ctx.font = '11px Share Tech Mono'; ctx.fillText(label, x, y - r - 6); }
   ctx.textAlign = 'start';
 }
 
@@ -1032,7 +1032,7 @@ function animSIOverview() {
     ctx.fillText('SHORT TRACE', 30, tLineY - 12);
     ctx.fillText('(< 1 inch)', 35, tLineY + 20);
     drawFace(ctx, 80 + Math.min(traceLen, 80) + 15, tLineY, 8, 'happy', globalTime);
-    ctx.fillStyle = '#4dff8880';
+    ctx.fillStyle = '#4dff88';
     ctx.fillText('= Simple wire', 30, tLineY + 32);
 
     // Long trace (T-line!) — right side
@@ -1046,12 +1046,12 @@ function animSIOverview() {
     ctx.fillText('LONG TRACE', 250, tLineY - 12);
     ctx.fillText('(> 1 inch @ 1ns Tr)', 255, tLineY + 20);
     drawFace(ctx, 250 + Math.min(traceLen * 2, 250) + 15, tLineY, 8, 'angry', globalTime);
-    ctx.fillStyle = '#ff2d7b80';
+    ctx.fillStyle = '#ff5a9e';
     ctx.fillText('= Transmission Line!', 250, tLineY + 32);
 
     // Threshold line
     const threshX = 560;
-    ctx.strokeStyle = '#ffcc0060';
+    ctx.strokeStyle = '#ffdd44';
     ctx.lineWidth = 1;
     ctx.setLineDash([4, 3]);
     ctx.beginPath();
@@ -1103,14 +1103,14 @@ function animSIOverview() {
     ctx.fillText('Fast rise (100ps) — Ringing!', 560, sigY + 18);
 
     // Arrow showing the difference
-    ctx.strokeStyle = '#7b9dff40';
+    ctx.strokeStyle = '#a8c8ff';
     ctx.setLineDash([3, 3]);
     ctx.beginPath();
     ctx.moveTo(390, sigY - 10);
     ctx.lineTo(555, sigY - 10);
     ctx.stroke();
     ctx.setLineDash([]);
-    ctx.fillStyle = '#7b9dff60';
+    ctx.fillStyle = '#8ab4ff';
     ctx.font = '8px Share Tech Mono';
     ctx.fillText('Rise time → 0', 430, sigY - 14);
 
@@ -1214,13 +1214,13 @@ function animTLine() {
     ctx.font = 'bold 10px Share Tech Mono';
 
     // R explanation — copper resistance
-    ctx.strokeStyle = '#00f0ff60';
+    ctx.strokeStyle = '#44f5ff';
     ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.moveTo(expX - 30, expBaseY);
     ctx.lineTo(expX - 10, expBaseY);
     ctx.stroke();
-    ctx.strokeStyle = '#ff880060';
+    ctx.strokeStyle = '#ffaa44';
     ctx.lineWidth = 1;
     ctx.beginPath();
     // heat waves above the trace
@@ -1235,13 +1235,13 @@ function animTLine() {
     ctx.font = 'bold 10px Share Tech Mono';
     ctx.fillText('R', expX + 2, expBaseY + 4);
     ctx.font = '8px Rajdhani';
-    ctx.fillStyle = '#ff880090';
+    ctx.fillStyle = '#ffaa44';
     ctx.fillText('Copper resist', expX + 15, expBaseY - 2);
     ctx.fillText('= garmi (heat)', expX + 15, expBaseY + 10);
 
     // L explanation — magnetic field
     const lY = expBaseY + 55;
-    ctx.strokeStyle = '#7b2dff60';
+    ctx.strokeStyle = '#9b5bff';
     ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.moveTo(expX - 30, lY);
@@ -1260,29 +1260,29 @@ function animTLine() {
     ctx.font = 'bold 10px Share Tech Mono';
     ctx.fillText('L', expX + 2, lY + 4);
     ctx.font = '8px Rajdhani';
-    ctx.fillStyle = '#7b2dff90';
+    ctx.fillStyle = '#9b5bff';
     ctx.fillText('Current → B-field', expX + 15, lY - 2);
     ctx.fillText('= speed breaker!', expX + 15, lY + 10);
 
     // C explanation — trace + ground = capacitor
     const cY = expBaseY + 110;
     // trace
-    ctx.strokeStyle = '#ff2d7b60';
+    ctx.strokeStyle = '#ff5a9e';
     ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.moveTo(expX - 30, cY - 6);
     ctx.lineTo(expX - 10, cY - 6);
     ctx.stroke();
     // FR4 dielectric
-    ctx.fillStyle = '#4dff8820';
+    ctx.fillStyle = '#4dff8866';
     ctx.fillRect(expX - 32, cY - 4, 24, 8);
-    ctx.strokeStyle = '#4dff8840';
+    ctx.strokeStyle = '#66ffaa';
     ctx.strokeRect(expX - 32, cY - 4, 24, 8);
     ctx.font = '6px Share Tech Mono';
-    ctx.fillStyle = '#4dff8860';
+    ctx.fillStyle = '#4dff88';
     ctx.fillText('FR4', expX - 26, cY + 1);
     // ground plane
-    ctx.strokeStyle = '#4dff8860';
+    ctx.strokeStyle = '#4dff88';
     ctx.lineWidth = 4;
     ctx.beginPath();
     ctx.moveTo(expX - 32, cY + 8);
@@ -1292,13 +1292,13 @@ function animTLine() {
     ctx.font = 'bold 10px Share Tech Mono';
     ctx.fillText('C', expX + 2, cY + 2);
     ctx.font = '8px Rajdhani';
-    ctx.fillStyle = '#ff2d7b90';
+    ctx.fillStyle = '#ff5a9e';
     ctx.fillText('Trace + GND plate', expX + 15, cY - 4);
     ctx.fillText('= chhota capacitor!', expX + 15, cY + 8);
 
     // G explanation — leakage through dielectric
     const gY = expBaseY + 165;
-    ctx.strokeStyle = '#ffcc0060';
+    ctx.strokeStyle = '#ffdd44';
     ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.moveTo(expX - 30, gY);
@@ -1317,12 +1317,12 @@ function animTLine() {
     ctx.font = 'bold 10px Share Tech Mono';
     ctx.fillText('G', expX + 2, gY + 4);
     ctx.font = '8px Rajdhani';
-    ctx.fillStyle = '#ffcc0090';
+    ctx.fillStyle = '#ffdd44';
     ctx.fillText('FR4 leakage', expX + 15, gY - 2);
     ctx.fillText('= tapakta pipe!', expX + 15, gY + 10);
 
     // Bottom summary
-    ctx.fillStyle = '#b0b0dd50';
+    ctx.fillStyle = '#c8c8ee';
     ctx.font = '9px Rajdhani';
     ctx.fillText('Har mm pe yeh sab mil ke', expX - 40, expBaseY + 200);
     ctx.fillText('ek chhota circuit banate hain!', expX - 40, expBaseY + 212);
@@ -1351,8 +1351,8 @@ function drawResistor(ctx, x1, y1, x2, y2) {
   const step = len / (zigzags * 2 + 2);
   ctx.lineTo(step, 0);
   for (let i = 0; i < zigzags; i++) {
-    ctx.lineTo(step + (i * 2 + 1) * step, (i % 2 === 0 ? -6 : 6));
-    ctx.lineTo(step + (i * 2 + 2) * step, (i % 2 === 0 ? 6 : -6));
+    ctx.lineTo(step + (i * 2 + 1) * step, (i % 2 === 0 ? -9 : 9));
+    ctx.lineTo(step + (i * 2 + 2) * step, (i % 2 === 0 ? 9 : -9));
   }
   ctx.lineTo(len - step, 0);
   ctx.lineTo(len, 0);
@@ -1363,16 +1363,16 @@ function drawResistor(ctx, x1, y1, x2, y2) {
 function drawCapacitor(ctx, x1, y1, x2, y2) {
   const midY = (y1 + y2) / 2;
   ctx.beginPath();
-  ctx.moveTo(x1, y1); ctx.lineTo(x1, midY - 5);
+  ctx.moveTo(x1, y1); ctx.lineTo(x1, midY - 7);
   ctx.stroke();
   ctx.beginPath();
-  ctx.moveTo(x1 - 8, midY - 5); ctx.lineTo(x1 + 8, midY - 5);
+  ctx.moveTo(x1 - 12, midY - 7); ctx.lineTo(x1 + 12, midY - 7);
   ctx.stroke();
   ctx.beginPath();
-  ctx.moveTo(x1 - 8, midY + 5); ctx.lineTo(x1 + 8, midY + 5);
+  ctx.moveTo(x1 - 12, midY + 7); ctx.lineTo(x1 + 12, midY + 7);
   ctx.stroke();
   ctx.beginPath();
-  ctx.moveTo(x1, midY + 5); ctx.lineTo(x1, y2);
+  ctx.moveTo(x1, midY + 7); ctx.lineTo(x1, y2);
   ctx.stroke();
 }
 
@@ -1383,7 +1383,7 @@ function drawInductor(ctx, x1, y1, x2, y2) {
   ctx.moveTo(x1, y1);
   for (let i = 0; i <= 40; i++) {
     const t = i / 40;
-    ctx.lineTo(x1 + t * dx, y1 + Math.sin(t * coils * Math.PI * 2) * 5);
+    ctx.lineTo(x1 + t * dx, y1 + Math.sin(t * coils * Math.PI * 2) * 8);
   }
   ctx.stroke();
 }
@@ -1499,44 +1499,44 @@ function animReflection() {
 
     // CIRCUIT: Reflection circuit - Source → Z0 → ZL mismatch
     ctx.save();
-    ctx.strokeStyle = '#7b9dff80';
+    ctx.strokeStyle = '#a8c8ff';
     ctx.lineWidth = 1;
     const ry = 340;
     // Left circuit (matched)
     drawVSource(ctx, 100, ry, 8, '');
     drawWire(ctx, 100, ry - 8, 100, ry - 22);
     drawResistor(ctx, 100, ry - 22, 145, ry - 22);
-    drawLabel(ctx, 122, ry - 30, 'Z₀', '#00ff8880');
+    drawLabel(ctx, 122, ry - 30, 'Z₀', '#00ff88');
     drawWire(ctx, 145, ry - 22, 175, ry - 22);
     ctx.setLineDash([3, 2]);
     drawWire(ctx, 175, ry - 22, 230, ry - 22);
     ctx.setLineDash([]);
-    drawLabel(ctx, 200, ry - 30, '50Ω', '#00ff8880');
+    drawLabel(ctx, 200, ry - 30, '50Ω', '#00ff88');
     drawResistor(ctx, 230, ry - 22, 275, ry - 22);
-    drawLabel(ctx, 252, ry - 30, '50Ω', '#00ff8880');
+    drawLabel(ctx, 252, ry - 30, '50Ω', '#00ff88');
     drawWire(ctx, 275, ry - 22, 275, ry);
     drawGround(ctx, 275, ry, 6);
     drawWire(ctx, 100, ry + 8, 100, ry);
     drawWire(ctx, 100, ry, 275, ry);
-    drawLabel(ctx, 180, ry + 12, 'Matched!', '#00ff8880');
+    drawLabel(ctx, 180, ry + 12, 'Matched!', '#00ff88');
 
     // Right circuit (mismatched)
     drawVSource(ctx, 500, ry, 8, '');
     drawWire(ctx, 500, ry - 8, 500, ry - 22);
     drawResistor(ctx, 500, ry - 22, 545, ry - 22);
-    drawLabel(ctx, 522, ry - 30, 'Z₀', '#ff444480');
+    drawLabel(ctx, 522, ry - 30, 'Z₀', '#ff6666');
     drawWire(ctx, 545, ry - 22, 575, ry - 22);
     ctx.setLineDash([3, 2]);
     drawWire(ctx, 575, ry - 22, 630, ry - 22);
     ctx.setLineDash([]);
-    drawLabel(ctx, 600, ry - 30, '50Ω', '#ff444480');
+    drawLabel(ctx, 600, ry - 30, '50Ω', '#ff6666');
     drawResistor(ctx, 630, ry - 22, 690, ry - 22);
-    drawLabel(ctx, 660, ry - 30, '150Ω!', '#ff444480');
+    drawLabel(ctx, 660, ry - 30, '150Ω!', '#ff6666');
     drawWire(ctx, 690, ry - 22, 690, ry);
     drawGround(ctx, 690, ry, 6);
     drawWire(ctx, 500, ry + 8, 500, ry);
     drawWire(ctx, 500, ry, 690, ry);
-    drawLabel(ctx, 590, ry + 12, 'Mismatch!', '#ff444480');
+    drawLabel(ctx, 590, ry + 12, 'Mismatch!', '#ff6666');
     ctx.restore();
 
     animFrames['refl'] = requestAnimationFrame(draw);
@@ -1564,10 +1564,10 @@ function animImpedance() {
 
     scenarios.forEach(s => {
       // Source
-      ctx.strokeStyle = '#7b9dff';
+      ctx.strokeStyle = '#8ab4ff';
       ctx.lineWidth = 2;
       ctx.strokeRect(s.x - 40, 40, 30, 40);
-      ctx.fillStyle = '#7b9dff';
+      ctx.fillStyle = '#8ab4ff';
       ctx.font = '10px Share Tech Mono';
       ctx.fillText('Src', s.x - 35, 65);
 
@@ -1659,7 +1659,7 @@ function animImpedance() {
     drawBubble(ctx, 670, 250, 'Short circuit!', '#4da8ff', globalTime);
 
     // Shoe analogy text
-    ctx.fillStyle = '#b0b0dd80';
+    ctx.fillStyle = '#c8c8ee';
     ctx.font = '9px Rajdhani';
     ctx.fillText('42 ka shoe, 42 ka foot = Perfect!', 60, 340);
     ctx.fillText('Loose shoe = gir padega!', 340, 340);
@@ -1667,23 +1667,23 @@ function animImpedance() {
 
     // CIRCUIT: Impedance matching circuit
     ctx.save();
-    ctx.strokeStyle = '#7b9dff60';
+    ctx.strokeStyle = '#8ab4ff';
     ctx.lineWidth = 1;
     const iy = 318;
     // Source Z0
     drawVSource(ctx, 80, iy, 7, '');
     drawWire(ctx, 80, iy - 7, 80, iy - 18);
     drawResistor(ctx, 80, iy - 18, 120, iy - 18);
-    drawLabel(ctx, 100, iy - 25, 'Z₀=50Ω', '#00ff8880');
+    drawLabel(ctx, 100, iy - 25, 'Z₀=50Ω', '#00ff88');
     // Matching section
     drawWire(ctx, 120, iy - 18, 145, iy - 18);
     ctx.setLineDash([3, 2]);
     drawWire(ctx, 145, iy - 18, 200, iy - 18);
     ctx.setLineDash([]);
-    drawLabel(ctx, 170, iy - 25, 'λ/4', '#ffcc0080');
+    drawLabel(ctx, 170, iy - 25, 'λ/4', '#ffdd44');
     // Load ZL
     drawResistor(ctx, 200, iy - 18, 250, iy - 18);
-    drawLabel(ctx, 225, iy - 25, 'ZL=50Ω', '#00ff8880');
+    drawLabel(ctx, 225, iy - 25, 'ZL=50Ω', '#00ff88');
     drawWire(ctx, 250, iy - 18, 250, iy);
     drawGround(ctx, 250, iy, 5);
     drawWire(ctx, 80, iy + 7, 80, iy);
@@ -1796,19 +1796,19 @@ function animCrosstalk() {
 
     // CIRCUIT: Coupled transmission lines with mutual Cm and Lm
     ctx.save();
-    ctx.strokeStyle = '#7b9dff60';
+    ctx.strokeStyle = '#8ab4ff';
     ctx.lineWidth = 1;
     const cty = 320;
     // Line 1 (aggressor)
     drawVSource(ctx, 100, cty, 7, '');
     drawWire(ctx, 100, cty - 7, 100, cty - 20);
     drawResistor(ctx, 100, cty - 20, 150, cty - 20);
-    drawLabel(ctx, 125, cty - 28, 'Z₀₁', '#00f0ff80');
+    drawLabel(ctx, 125, cty - 28, 'Z₀₁', '#44f5ff');
     ctx.setLineDash([3, 2]);
     drawWire(ctx, 150, cty - 20, 300, cty - 20);
     ctx.setLineDash([]);
     drawResistor(ctx, 300, cty - 20, 350, cty - 20);
-    drawLabel(ctx, 325, cty - 28, 'RL₁', '#00f0ff80');
+    drawLabel(ctx, 325, cty - 28, 'RL₁', '#44f5ff');
     drawWire(ctx, 350, cty - 20, 350, cty);
     drawGround(ctx, 350, cty, 5);
     drawWire(ctx, 100, cty + 7, 100, cty);
@@ -1818,21 +1818,21 @@ function animCrosstalk() {
     drawVSource(ctx, 450, cty, 7, '');
     drawWire(ctx, 450, cty - 7, 450, cty - 20);
     drawResistor(ctx, 450, cty - 20, 500, cty - 20);
-    drawLabel(ctx, 475, cty - 28, 'Z₀₂', '#ff2d7b80');
+    drawLabel(ctx, 475, cty - 28, 'Z₀₂', '#ff5a9e');
     ctx.setLineDash([3, 2]);
     drawWire(ctx, 500, cty - 20, 650, cty - 20);
     ctx.setLineDash([]);
     drawResistor(ctx, 650, cty - 20, 700, cty - 20);
-    drawLabel(ctx, 675, cty - 28, 'RL₂', '#ff2d7b80');
+    drawLabel(ctx, 675, cty - 28, 'RL₂', '#ff5a9e');
     drawWire(ctx, 700, cty - 20, 700, cty);
     drawGround(ctx, 700, cty, 5);
     drawWire(ctx, 450, cty + 7, 450, cty);
     drawWire(ctx, 450, cty, 700, cty);
 
     // Mutual coupling (Cm and Lm between lines)
-    ctx.strokeStyle = '#7b2dff60';
+    ctx.strokeStyle = '#9b5bff';
     drawCapacitor(ctx, 225, cty - 20, 575, cty - 20);
-    drawLabel(ctx, 400, cty - 28, 'Cm', '#7b2dff80');
+    drawLabel(ctx, 400, cty - 28, 'Cm', '#9b5bff');
     // Mutual inductance arrows
     ctx.setLineDash([2, 2]);
     ctx.beginPath();
@@ -1840,7 +1840,7 @@ function animCrosstalk() {
     ctx.moveTo(550, cty - 14); ctx.lineTo(550, cty - 8);
     ctx.stroke();
     ctx.setLineDash([]);
-    drawLabel(ctx, 400, cty - 5, 'Lm', '#7b2dff80');
+    drawLabel(ctx, 400, cty - 5, 'Lm', '#9b5bff');
     ctx.restore();
 
     animFrames['xt'] = requestAnimationFrame(draw);
@@ -1969,24 +1969,24 @@ function animEye() {
     drawBubble(ctx, x0 + width + 25, cy - 22, 'Healthy!', '#00f0ff', globalTime);
 
     // Doctor text
-    ctx.fillStyle = '#ffcc0080';
+    ctx.fillStyle = '#ffdd44';
     ctx.font = '10px Rajdhani';
     ctx.fillText('Doctor: "Signal ki health theek hai!"', cx - 90, y0 + height + 35);
 
     // CIRCUIT: TX → Channel → RX → Sampling (Eye diagram generator)
     ctx.save();
-    ctx.strokeStyle = '#7b9dff50';
+    ctx.strokeStyle = '#8ab4ff';
     ctx.lineWidth = 1;
     const ey = y0 + height + 48;
 
     // TX (transmitter)
     ctx.strokeRect(55, ey - 28, 40, 22);
-    drawLabel(ctx, 75, ey - 15, 'TX', '#00f0ff50');
+    drawLabel(ctx, 75, ey - 15, 'TX', '#44f5ff');
     drawWire(ctx, 95, ey - 17, 115, ey - 17);
 
     // Series resistor (output impedance)
     drawResistor(ctx, 115, ey - 17, 150, ey - 17);
-    drawLabel(ctx, 132, ey - 25, 'Z₀', '#ffcc0050');
+    drawLabel(ctx, 132, ey - 25, 'Z₀', '#ffdd44');
     drawWire(ctx, 150, ey - 17, 165, ey - 17);
 
     // Channel (transmission line with parasitics)
@@ -1996,29 +1996,29 @@ function animEye() {
     // Channel capacitance to ground
     drawNode(ctx, 210, ey - 17, 2);
     drawCapacitor(ctx, 210, ey - 17, 210, ey - 36);
-    drawLabel(ctx, 220, ey - 30, 'Cc', '#ff2d7b40');
+    drawLabel(ctx, 220, ey - 30, 'Cc', '#ff5a9e');
     drawWire(ctx, 210, ey - 36, 210, ey - 42);
     drawGround(ctx, 210, ey - 42, 4);
     // Channel inductance
     drawNode(ctx, 260, ey - 17, 2);
     drawInductor(ctx, 260, ey - 17, 310, ey - 17);
-    drawLabel(ctx, 285, ey - 25, 'Lch', '#7b2dff40');
+    drawLabel(ctx, 285, ey - 25, 'Lch', '#9b5bff');
 
     // RX (receiver with termination)
     drawWire(ctx, 310, ey - 17, 330, ey - 17);
     drawNode(ctx, 330, ey - 17, 2);
     // Termination resistor
     drawResistor(ctx, 330, ey - 17, 330, ey - 40);
-    drawLabel(ctx, 340, ey - 32, 'Rt=50Ω', '#4dff8840');
+    drawLabel(ctx, 340, ey - 32, 'Rt=50Ω', '#66ffaa');
     drawWire(ctx, 330, ey - 40, 330, ey - 46);
-    drawLabel(ctx, 325, ey - 50, 'Vref', '#4dff8840');
+    drawLabel(ctx, 325, ey - 50, 'Vref', '#66ffaa');
     // Sampling switch
     drawWire(ctx, 330, ey - 17, 370, ey - 17);
     ctx.strokeRect(370, ey - 28, 50, 22);
-    drawLabel(ctx, 395, ey - 15, 'Sample', '#00f0ff50');
+    drawLabel(ctx, 395, ey - 15, 'Sample', '#44f5ff');
     // Clock input to sampler
     drawWire(ctx, 395, ey - 28, 395, ey - 38);
-    drawLabel(ctx, 395, ey - 42, 'CLK', '#ffcc0050');
+    drawLabel(ctx, 395, ey - 42, 'CLK', '#ffdd44');
     ctx.setLineDash([2, 2]);
     ctx.beginPath();
     // small clock waveform
@@ -2030,9 +2030,9 @@ function animEye() {
 
     // Eye output
     drawWire(ctx, 420, ey - 17, 445, ey - 17);
-    drawLabel(ctx, 475, ey - 20, '→ Eye Diagram', '#00ff8850');
+    drawLabel(ctx, 475, ey - 20, '→ Eye Diagram', '#66ffaa');
     // Eye shape icon
-    ctx.strokeStyle = '#00ff8840';
+    ctx.strokeStyle = '#66ffaa';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.moveTo(455, ey - 8);
@@ -2190,7 +2190,7 @@ function animTermination() {
 
     // CIRCUIT: Proper termination circuits
     ctx.save();
-    ctx.strokeStyle = '#7b9dff50';
+    ctx.strokeStyle = '#8ab4ff';
     ctx.lineWidth = 1;
     const ty = 280;
 
@@ -2198,12 +2198,12 @@ function animTermination() {
     drawVSource(ctx, 60, ty, 6, '');
     drawWire(ctx, 60, ty - 6, 60, ty - 16);
     drawResistor(ctx, 60, ty - 16, 100, ty - 16);
-    drawLabel(ctx, 75, ty - 24, 'Rs=33Ω', '#00f0ff60');
+    drawLabel(ctx, 75, ty - 24, 'Rs=33Ω', '#44f5ff');
     drawWire(ctx, 100, ty - 16, 120, ty - 16);
     ctx.setLineDash([3, 2]);
     drawWire(ctx, 120, ty - 16, 200, ty - 16);
     ctx.setLineDash([]);
-    drawLabel(ctx, 155, ty - 24, 'Z₀', '#00f0ff60');
+    drawLabel(ctx, 155, ty - 24, 'Z₀', '#44f5ff');
     // Open at end (no parallel R)
     drawWire(ctx, 200, ty - 16, 220, ty - 16);
     drawNode(ctx, 220, ty - 16, 2);
@@ -2211,7 +2211,7 @@ function animTermination() {
     drawGround(ctx, 220, ty, 5);
     drawWire(ctx, 60, ty + 6, 60, ty);
     drawWire(ctx, 60, ty, 220, ty);
-    drawLabel(ctx, 140, ty + 10, 'Series', '#00f0ff60');
+    drawLabel(ctx, 140, ty + 10, 'Series', '#44f5ff');
 
     // Parallel termination circuit
     drawVSource(ctx, 310, ty, 6, '');
@@ -2219,18 +2219,18 @@ function animTermination() {
     ctx.setLineDash([3, 2]);
     drawWire(ctx, 310, ty - 16, 420, ty - 16);
     ctx.setLineDash([]);
-    drawLabel(ctx, 365, ty - 24, 'Z₀', '#7b2dff60');
+    drawLabel(ctx, 365, ty - 24, 'Z₀', '#9b5bff');
     drawWire(ctx, 420, ty - 16, 440, ty - 16);
     drawNode(ctx, 440, ty - 16, 2);
     drawResistor(ctx, 440, ty - 16, 440, ty - 50);
-    drawLabel(ctx, 450, ty - 40, 'Rp=50Ω', '#7b2dff60');
+    drawLabel(ctx, 450, ty - 40, 'Rp=50Ω', '#9b5bff');
     drawWire(ctx, 440, ty - 50, 440, ty - 56);
-    drawLabel(ctx, 445, ty - 60, 'VCC', '#7b2dff60');
+    drawLabel(ctx, 445, ty - 60, 'VCC', '#9b5bff');
     drawWire(ctx, 440, ty - 16, 440, ty);
     drawGround(ctx, 440, ty, 5);
     drawWire(ctx, 310, ty + 6, 310, ty);
     drawWire(ctx, 310, ty, 440, ty);
-    drawLabel(ctx, 375, ty + 10, 'Parallel', '#7b2dff60');
+    drawLabel(ctx, 375, ty + 10, 'Parallel', '#9b5bff');
 
     // AC termination circuit
     drawVSource(ctx, 530, ty, 6, '');
@@ -2238,20 +2238,20 @@ function animTermination() {
     ctx.setLineDash([3, 2]);
     drawWire(ctx, 530, ty - 16, 630, ty - 16);
     ctx.setLineDash([]);
-    drawLabel(ctx, 580, ty - 24, 'Z₀', '#ffcc0060');
+    drawLabel(ctx, 580, ty - 24, 'Z₀', '#ffdd44');
     drawWire(ctx, 630, ty - 16, 650, ty - 16);
     drawNode(ctx, 650, ty - 16, 2);
     drawCapacitor(ctx, 650, ty - 16, 650, ty - 40);
-    drawLabel(ctx, 660, ty - 32, 'C', '#ffcc0060');
+    drawLabel(ctx, 660, ty - 32, 'C', '#ffdd44');
     drawWire(ctx, 650, ty - 40, 650, ty - 46);
     drawResistor(ctx, 650, ty - 46, 650, ty - 66);
-    drawLabel(ctx, 660, ty - 58, 'R=50Ω', '#ffcc0060');
+    drawLabel(ctx, 660, ty - 58, 'R=50Ω', '#ffdd44');
     drawWire(ctx, 650, ty - 66, 650, ty - 72);
     drawWire(ctx, 650, ty - 16, 650, ty);
     drawGround(ctx, 650, ty, 5);
     drawWire(ctx, 530, ty + 6, 530, ty);
     drawWire(ctx, 530, ty, 650, ty);
-    drawLabel(ctx, 590, ty + 10, 'AC Term', '#ffcc0060');
+    drawLabel(ctx, 590, ty + 10, 'AC Term', '#ffdd44');
     ctx.restore();
 
     animFrames['term'] = requestAnimationFrame(draw);
@@ -2327,7 +2327,7 @@ function animEMI() {
       ctx.fillStyle = `rgba(123, 45, 255, ${amp * 0.3})`;
       ctx.fillRect(50 + x, 280, 1, 25 * amp);
     }
-    ctx.fillStyle = '#7b9dff';
+    ctx.fillStyle = '#8ab4ff';
     ctx.font = '9px Share Tech Mono';
     ctx.fillText('Frequency Spectrum →', 300, 315);
 
@@ -2345,28 +2345,28 @@ function animEMI() {
 
     // CIRCUIT: EMI filtering with ferrite bead + decoupling
     ctx.save();
-    ctx.strokeStyle = '#7b9dff50';
+    ctx.strokeStyle = '#8ab4ff';
     ctx.lineWidth = 1;
     const ey = 335;
     // Noise source (IC switching)
     drawVSource(ctx, 80, ey, 6, '');
-    drawLabel(ctx, 80, ey - 16, 'IC (noise)', '#ff2d7b60');
+    drawLabel(ctx, 80, ey - 16, 'IC (noise)', '#ff5a9e');
     drawWire(ctx, 80, ey - 6, 80, ey - 22);
     // Ferrite bead (drawn as inductor with label)
     drawInductor(ctx, 80, ey - 22, 140, ey - 22);
-    drawLabel(ctx, 110, ey - 30, 'FB (ferrite)', '#ffcc0060');
+    drawLabel(ctx, 110, ey - 30, 'FB (ferrite)', '#ffdd44');
     drawWire(ctx, 140, ey - 22, 170, ey - 22);
     // Decoupling cap to ground
     drawNode(ctx, 170, ey - 22, 2);
     drawCapacitor(ctx, 170, ey - 22, 170, ey - 44);
-    drawLabel(ctx, 180, ey - 36, '100nF', '#00ff8860');
+    drawLabel(ctx, 180, ey - 36, '100nF', '#66ffaa');
     drawWire(ctx, 170, ey - 44, 170, ey - 50);
     drawWire(ctx, 170, ey - 22, 170, ey);
     drawGround(ctx, 170, ey, 5);
     // Clean output
     drawWire(ctx, 170, ey - 22, 230, ey - 22);
     drawResistor(ctx, 230, ey - 22, 280, ey - 22);
-    drawLabel(ctx, 255, ey - 30, 'RL', '#4da8ff60');
+    drawLabel(ctx, 255, ey - 30, 'RL', '#6ec0ff');
     drawWire(ctx, 280, ey - 22, 280, ey);
     drawGround(ctx, 280, ey, 5);
     drawWire(ctx, 80, ey + 6, 80, ey);
@@ -2374,10 +2374,10 @@ function animEMI() {
     // Second cap (bulk)
     drawNode(ctx, 230, ey - 22, 2);
     drawCapacitor(ctx, 230, ey - 22, 230, ey - 44);
-    drawLabel(ctx, 240, ey - 36, '10µF', '#4dff8860');
+    drawLabel(ctx, 240, ey - 36, '10µF', '#4dff88');
     drawWire(ctx, 230, ey - 44, 230, ey - 50);
     // Shielding note
-    drawLabel(ctx, 430, ey - 16, 'Shield = Faraday cage for PCB', '#7b9dff40');
+    drawLabel(ctx, 430, ey - 16, 'Shield = Faraday cage for PCB', '#a8c8ff');
     ctx.restore();
 
     animFrames['emi'] = requestAnimationFrame(draw);
@@ -2411,7 +2411,7 @@ function animPI() {
     ctx.stroke();
 
     // Axis labels
-    ctx.fillStyle = '#7b9dff';
+    ctx.fillStyle = '#8ab4ff';
     ctx.font = '10px Share Tech Mono';
     ctx.fillText('|Z| (Ω)', 20, margin.top + 20);
     ctx.fillText('Frequency (Hz)', margin.left + pw / 2 - 40, margin.top + ph + 45);
@@ -2495,7 +2495,7 @@ function animPI() {
 
     // CIRCUIT: PDN with decoupling caps
     ctx.save();
-    ctx.strokeStyle = '#7b9dff40';
+    ctx.strokeStyle = '#a8c8ff';
     ctx.lineWidth = 1;
     const py2 = margin.top + ph + 5;
     // VRM (voltage regulator)
@@ -2503,12 +2503,12 @@ function animPI() {
     drawWire(ctx, 100, py2 - 7, 100, py2 - 22);
     // Plane inductance
     drawInductor(ctx, 100, py2 - 22, 160, py2 - 22);
-    drawLabel(ctx, 130, py2 - 30, 'Lplane', '#ffcc0060');
+    drawLabel(ctx, 130, py2 - 30, 'Lplane', '#ffdd44');
     drawWire(ctx, 160, py2 - 22, 175, py2 - 22);
     // Bulk cap
     drawNode(ctx, 175, py2 - 22, 2);
     drawCapacitor(ctx, 175, py2 - 22, 175, py2 - 44);
-    drawLabel(ctx, 185, py2 - 36, '47µF', '#ffcc0060');
+    drawLabel(ctx, 185, py2 - 36, '47µF', '#ffdd44');
     drawWire(ctx, 175, py2 - 44, 175, py2 - 50);
     drawWire(ctx, 175, py2 - 22, 175, py2);
     drawGround(ctx, 175, py2, 5);
@@ -2517,23 +2517,23 @@ function animPI() {
     // Ceramic caps (2 in parallel)
     drawNode(ctx, 220, py2 - 22, 2);
     drawCapacitor(ctx, 220, py2 - 22, 220, py2 - 44);
-    drawLabel(ctx, 230, py2 - 36, '10µF', '#00ff8860');
+    drawLabel(ctx, 230, py2 - 36, '10µF', '#66ffaa');
     drawWire(ctx, 220, py2 - 44, 220, py2 - 50);
     drawWire(ctx, 220, py2 - 22, 265, py2 - 22);
     drawNode(ctx, 265, py2 - 22, 2);
     drawCapacitor(ctx, 265, py2 - 22, 265, py2 - 44);
-    drawLabel(ctx, 275, py2 - 36, '100nF', '#4dff8860');
+    drawLabel(ctx, 275, py2 - 36, '100nF', '#4dff88');
     drawWire(ctx, 265, py2 - 44, 265, py2 - 50);
     // IC load
     drawWire(ctx, 265, py2 - 22, 320, py2 - 22);
     drawResistor(ctx, 320, py2 - 22, 360, py2 - 22);
-    drawLabel(ctx, 340, py2 - 30, 'IC', '#ff2d7b60');
+    drawLabel(ctx, 340, py2 - 30, 'IC', '#ff5a9e');
     drawWire(ctx, 360, py2 - 22, 360, py2);
     drawGround(ctx, 360, py2, 5);
     // Ground return
     drawWire(ctx, 100, py2 + 7, 100, py2);
     drawWire(ctx, 100, py2, 360, py2);
-    drawLabel(ctx, 225, py2 + 10, 'PDN: VRM → Bulk → Ceramic → IC', '#7b9dff40');
+    drawLabel(ctx, 225, py2 + 10, 'PDN: VRM → Bulk → Ceramic → IC', '#a8c8ff');
     ctx.restore();
 
     animFrames['pi'] = requestAnimationFrame(draw);
@@ -2723,35 +2723,35 @@ function animVia() {
 
     // CIRCUIT: Via equivalent π-model
     ctx.save();
-    ctx.strokeStyle = '#7b9dff50';
+    ctx.strokeStyle = '#8ab4ff';
     ctx.lineWidth = 1;
     const vy2 = 260;
     // Input trace
     drawWire(ctx, 550, vy2 - 22, 590, vy2 - 22);
-    drawLabel(ctx, 555, vy2 - 30, 'Signal in', '#00f0ff50');
+    drawLabel(ctx, 555, vy2 - 30, 'Signal in', '#44f5ff');
     drawNode(ctx, 590, vy2 - 22, 2);
     // C_pad1 (top)
     drawCapacitor(ctx, 590, vy2 - 22, 590, vy2 - 44);
-    drawLabel(ctx, 598, vy2 - 36, 'Cpad', '#ff2d7b50');
+    drawLabel(ctx, 598, vy2 - 36, 'Cpad', '#ff5a9e');
     drawWire(ctx, 590, vy2 - 44, 590, vy2 - 50);
     // L_barrel
     drawInductor(ctx, 590, vy2 - 22, 650, vy2 - 22);
-    drawLabel(ctx, 615, vy2 - 30, 'Lvia', '#ffcc0050');
+    drawLabel(ctx, 615, vy2 - 30, 'Lvia', '#ffdd44');
     // C_pad2 (bottom)
     drawNode(ctx, 650, vy2 - 22, 2);
     drawCapacitor(ctx, 650, vy2 - 22, 650, vy2 - 44);
-    drawLabel(ctx, 658, vy2 - 36, 'Cpad', '#ff2d7b50');
+    drawLabel(ctx, 658, vy2 - 36, 'Cpad', '#ff5a9e');
     drawWire(ctx, 650, vy2 - 44, 650, vy2 - 50);
     // Output trace
     drawWire(ctx, 650, vy2 - 22, 700, vy2 - 22);
-    drawLabel(ctx, 680, vy2 - 30, 'Signal out', '#ff2d7b50');
+    drawLabel(ctx, 680, vy2 - 30, 'Signal out', '#ff5a9e');
     // Grounds
     drawWire(ctx, 590, vy2 - 50, 590, vy2 - 55);
     drawGround(ctx, 590, vy2 - 55, 5);
     drawWire(ctx, 650, vy2 - 50, 650, vy2 - 55);
     drawGround(ctx, 650, vy2 - 55, 5);
     // Label
-    drawLabel(ctx, 620, vy2 - 60, 'Via π-model', '#7b9dff40');
+    drawLabel(ctx, 620, vy2 - 60, 'Via π-model', '#a8c8ff');
     ctx.restore();
 
     animFrames['via'] = requestAnimationFrame(draw);
