@@ -1,0 +1,2871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signal Integrity - AI-Powered Presentation</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a1a;
+    color: #e0e0ff;
+    font-family: 'Rajdhani', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  #bg-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    opacity: 0.3;
+  }
+
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    z-index: 1;
+    padding: 40px;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: scale(1);
+    z-index: 2;
+  }
+
+  .slide h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 3.2em;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #00f0ff, #7b2dff, #ff2d7b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    text-shadow: 0 0 40px rgba(0, 240, 255, 0.3);
+  }
+
+  .slide h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.2em;
+    margin-bottom: 20px;
+    color: #00f0ff;
+    text-align: center;
+  }
+
+  .slide h3 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.5em;
+    color: #7b9dff;
+    margin-bottom: 10px;
+  }
+
+  .slide p, .slide li {
+    font-size: 1.35em;
+    line-height: 1.7;
+    color: #c8c8ee;
+    max-width: 900px;
+    text-align: center;
+  }
+
+  .slide ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .slide ul li::before {
+    content: '▸ ';
+    color: #00f0ff;
+  }
+
+  .subtitle {
+    font-size: 1.4em !important;
+    color: #7b9dff !important;
+    margin-bottom: 5px;
+  }
+
+  .canvas-container {
+    position: relative;
+    width: 800px;
+    height: 350px;
+    margin: 15px auto;
+    border: 1px solid rgba(0, 240, 255, 0.2);
+    border-radius: 12px;
+    background: rgba(5, 5, 30, 0.8);
+    overflow: hidden;
+  }
+
+  .canvas-container canvas {
+    width: 100%;
+    height: 100%;
+  }
+
+  .two-col {
+    display: flex;
+    gap: 30px;
+    width: 100%;
+    max-width: 1100px;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .two-col .col {
+    flex: 1;
+    text-align: left;
+  }
+
+  .two-col .col p, .two-col .col li {
+    text-align: left;
+  }
+
+  /* Navigation */
+  .nav {
+    position: fixed;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .nav button {
+    background: rgba(0, 240, 255, 0.1);
+    border: 1px solid rgba(0, 240, 255, 0.3);
+    color: #00f0ff;
+    padding: 10px 22px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.85em;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s;
+  }
+
+  .nav button:hover {
+    background: rgba(0, 240, 255, 0.25);
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+  }
+
+  .slide-counter {
+    font-family: 'Share Tech Mono', monospace;
+    color: #7b9dff;
+    font-size: 0.95em;
+  }
+
+  /* Progress bar */
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #00f0ff, #7b2dff, #ff2d7b);
+    z-index: 100;
+    transition: width 0.4s ease;
+  }
+
+  /* Title slide special */
+  .title-slide .ai-badge {
+    display: inline-block;
+    padding: 6px 20px;
+    border: 1px solid #7b2dff;
+    border-radius: 20px;
+    color: #7b2dff;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.9em;
+    margin: 15px 0;
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 5px rgba(123, 45, 255, 0.3); }
+    50% { box-shadow: 0 0 20px rgba(123, 45, 255, 0.6); }
+  }
+
+  .grid-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-image:
+      linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .formula-box {
+    background: rgba(0, 240, 255, 0.05);
+    border: 1px solid rgba(0, 240, 255, 0.2);
+    border-radius: 8px;
+    padding: 12px 25px;
+    margin: 10px 0;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.3em;
+    color: #00f0ff;
+    display: inline-block;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 12px;
+    font-size: 0.9em;
+    margin: 4px;
+  }
+
+  .tag-blue { background: rgba(0, 150, 255, 0.15); color: #4da8ff; border: 1px solid rgba(0, 150, 255, 0.3); }
+  .tag-purple { background: rgba(123, 45, 255, 0.15); color: #a06bff; border: 1px solid rgba(123, 45, 255, 0.3); }
+  .tag-green { background: rgba(0, 255, 100, 0.1); color: #4dff88; border: 1px solid rgba(0, 255, 100, 0.3); }
+  .tag-red { background: rgba(255, 45, 123, 0.1); color: #ff5a9e; border: 1px solid rgba(255, 45, 123, 0.3); }
+
+  .small-text { font-size: 0.95em !important; }
+
+  .interactive-hint {
+    font-size: 0.8em;
+    color: rgba(123, 157, 255, 0.6);
+    margin-top: 5px;
+    font-style: italic;
+  }
+
+  .def-box {
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.06), rgba(123, 45, 255, 0.06));
+    border: 1px solid rgba(0, 240, 255, 0.2);
+    border-left: 3px solid #00f0ff;
+    border-radius: 8px;
+    padding: 10px 18px;
+    margin: 8px auto;
+    max-width: 850px;
+    text-align: left;
+  }
+
+  .def-box .def-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85em;
+    color: #00f0ff;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .def-box .def-text {
+    font-size: 1.15em;
+    color: #d0d0f0;
+    line-height: 1.6;
+  }
+
+  .def-box .def-text strong {
+    color: #00f0ff;
+  }
+
+  .fix-box {
+    background: linear-gradient(135deg, rgba(0, 255, 100, 0.06), rgba(0, 180, 80, 0.06));
+    border: 1px solid rgba(0, 255, 100, 0.2);
+    border-left: 3px solid #4dff88;
+    border-radius: 8px;
+    padding: 10px 18px;
+    margin: 8px auto;
+    max-width: 850px;
+    text-align: left;
+  }
+
+  .fix-box .fix-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85em;
+    color: #4dff88;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .fix-box .fix-text {
+    font-size: 1.15em;
+    color: #c8e8d8;
+    line-height: 1.6;
+  }
+
+  .fix-box .fix-text strong {
+    color: #4dff88;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<div class="grid-overlay"></div>
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- SLIDE 0: Title -->
+<div class="slide title-slide active" id="slide-0">
+  <div class="ai-badge">AI-POWERED PRESENTATION</div>
+  <h1>Signal Integrity</h1>
+  <p class="subtitle">Understanding High-Speed Digital Design</p>
+  <p class="small-text" style="margin-top: 30px; color: #7b9dff;">Presented to: Rizwan</p>
+  <p class="small-text" style="color: rgba(123,157,255,0.5);">Press Arrow Keys or Click Navigation to Continue</p>
+</div>
+
+<!-- SLIDE 1: What is SI -->
+<div class="slide" id="slide-1">
+  <h2>What is Signal Integrity?</h2>
+  <div class="def-box">
+    <div class="def-label">SIMPLE DEFINITION</div>
+    <div class="def-text">Sochein aap ne WhatsApp pe voice note bheja — agar dusre side pe <strong>"haan?" "kya?" "phir se bhej!"</strong> na aaye, toh Signal Integrity theek hai! Signal bhi yahi hai — receiver ko sahi samajh aaya = SI clear hai.</div>
+  </div>
+  <div class="def-box" style="border-left-color: #ff2d7b; background: linear-gradient(135deg, rgba(255,45,123,0.06), rgba(255,100,50,0.04));">
+    <div class="def-label" style="color: #ff5a9e;">HIGH SPEED — KAB TRACE TRANSMISSION LINE BANTA HAI?</div>
+    <div class="def-text">Jab signal ki <strong>rise time</strong> itni fast ho ke signal trace ke <strong>aadhe</strong> se zyada travel kar le <strong>pehle hi</strong> edge complete ho — tab simple trace <strong>transmission line</strong> ban jata hai! Rule of thumb: <strong>L > Tr × v / 6</strong> — FR4 pe 1ns rise time = agar trace <strong>1 inch se lambi</strong> hai, transmission line samjho!</div>
+  </div>
+  <div style="text-align: center;">
+    <div class="formula-box">Trace length > (Tr × v) / 6 = TRANSMISSION LINE!</div>
+    <p class="small-text" style="color: #ff5a9e; margin-top: 4px;">Tr = rise time, v ≈ 6 inches/ns (FR4). Example: 500ps rise time → 0.5 inch se upar = T-line!</p>
+  </div>
+  <div style="margin-top: 8px; text-align: center;">
+    <span class="tag tag-blue">Transmission Lines</span>
+    <span class="tag tag-red">Reflection</span>
+    <span class="tag tag-green">Impedance Matching</span>
+    <span class="tag tag-purple">Crosstalk</span>
+    <span class="tag tag-blue">Eye Diagrams</span>
+    <span class="tag tag-red">Termination</span>
+    <span class="tag tag-green">EMI & EMC</span>
+    <span class="tag tag-purple">Power Integrity</span>
+    <span class="tag tag-blue">Via Effects</span>
+    <span class="tag tag-green">AI in SI</span>
+  </div>
+  <div class="canvas-container" style="height: 160px; margin-top: 8px;">
+    <canvas id="canvas-si-overview" width="800" height="160"></canvas>
+  </div>
+</div>
+
+<!-- SLIDE 2: Transmission Lines -->
+<div class="slide" id="slide-2">
+  <h2>Transmission Lines</h2>
+  <div class="def-box">
+    <div class="def-label">SIMPLE DEFINITION</div>
+    <div class="def-text">PCB ki trace <strong>highway</strong> jaisi hai — lekin high speed pe har 5 steps pe <strong>speed breaker</strong> aa jata hai! Simple copper wire R, L, C ka cluster ban jata hai. Road aam lagti hai, lekin underneath pura circus chal raha hai.</div>
+  </div>
+  <div class="def-box" style="border-left-color: #ffcc00; background: linear-gradient(135deg, rgba(255,200,0,0.05), rgba(255,150,0,0.03));">
+    <div class="def-label" style="color: #ffcc00;">KYA HO JATA HAI? TRACE R,L,C CLUSTER KAISE BANTA HAI</div>
+    <div class="def-text">
+      <strong>R (Resistance):</strong> Copper wire bhi thora <strong>resist karta hai</strong> — jaise purani pipe se kam paani aata hai. Signal ki energy thori <strong>garmi mein zaya</strong> ho jati hai.<br>
+      <strong>L (Inductance):</strong> Current flow karta hai toh aas paas <strong>chhota magnetic field</strong> banta hai — jaise fan on karo toh hawa feel hoti hai. Yeh field <strong>signal ko rokne ki koshish</strong> karta hai = speed breaker!<br>
+      <strong>C (Capacitance):</strong> Trace neeche <strong>ground plane</strong> hai — dono ke beech FR4 (dielectric) hai. Yeh ek <strong>chhota capacitor</strong> ban jata hai — jaise do plates ke beech hawa. Signal ki energy thori <strong>charge mein store</strong> ho jati hai.<br>
+      <strong>G (Conductance):</strong> FR4 perfect insulator nahi — thora thora <strong>leakage</strong> hota hai, jaise cracked pipe se paani <strong>tapakta</strong> rehta hai.<br><br>
+      <strong>Result:</strong> Yeh sab mil ke har millimeter pe ek chhota circuit banate hain — aur <strong>poori trace ek lambi chain</strong> ban jati hai! Is liye high speed pe trace "wire" nahi rehti — <strong>transmission line</strong> ban jati hai!
+    </div>
+  </div>
+  <div class="fix-box">
+    <div class="fix-label">HOW TO DESIGN IT RIGHT</div>
+    <div class="fix-text"><strong>Saturn PCB tool</strong> download karo, 5 mil width set karo FR4 ke liye. Ground plane ko <strong>unbroken</strong> rakhna — yehi woh 50Ω ka secret mantra hai!</div>
+  </div>
+  <div class="canvas-container">
+    <canvas id="canvas-tline" width="800" height="350"></canvas>
+  </div>
+  <div class="two-col" style="margin-top: 15px;">
+    <div class="col">
+      <h3>Key Concepts</h3>
+      <ul>
+        <li>Distributed R, L, C, G model</li>
+        <li>Characteristic Impedance Z₀</li>
+        <li>Propagation delay & velocity</li>
+      </ul>
+    </div>
+    <div class="col" style="text-align: center;">
+      <div class="formula-box">Z₀ = √(L/C)</div><br>
+      <div class="formula-box">v = 1/√(LC)</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: Reflection -->
+<div class="slide" id="slide-3">
+  <h2>Reflection</h2>
+  <div class="def-box">
+    <div class="def-label">SIMPLE DEFINITION</div>
+    <div class="def-text">Gallery mein ball maara — <strong>wapas aake aap ki mara!</strong> Yehi reflection hai. Signal jab impedance change hit karta hai toh <strong>bounce back</strong> ho kar chaos create karta hai. Signal kehte hai "mujhe wapas jaane do!"</div>
+  </div>
+  <div class="fix-box">
+    <div class="fix-label">HOW TO FIX REFLECTIONS</div>
+    <div class="fix-text"><strong>Ek 33Ω resistor laga do</strong> source pe. Itna sasta hai lekin signal ko <strong>lakhon ka nuksan</strong> bachata hai! Trace width suddenly mat badalna, aur stubs se door raho. <strong>DDR clock</strong> = always series termination at CPU.</div>
+  </div>
+    <canvas id="canvas-reflection" width="800" height="350"></canvas>
+  </div>
+  <div class="two-col" style="margin-top: 10px;">
+    <div class="col">
+      <h3>Causes</h3>
+      <ul>
+        <li>Impedance discontinuity</li>
+        <li>Unterminated traces</li>
+        <li>Vias and connectors</li>
+      </ul>
+    </div>
+    <div class="col" style="text-align: center;">
+      <div class="formula-box">Γ = (Z_L - Z₀)/(Z_L + Z₀)</div>
+      <p class="small-text" style="margin-top: 8px;">Reflection Coefficient</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: Impedance Matching -->
+<div class="slide" id="slide-4">
+  <h2>Impedance Matching</h2>
+  <div class="def-box">
+    <div class="def-label">SIMPLE DEFINITION</div>
+    <div class="def-text">Shoes ka size <strong>exactly fit</strong> hona chahiye — 42 ka foot pe 42 ka shoe. Loose hai toh giroge, tight hai toh dard hoga! Impedance bhi <strong>exactly match</strong> hona chahiye warna signal <strong>"trip" kar ke gir jata hai!</strong></div>
+  </div>
+  <div class="fix-box">
+    <div class="fix-label">HOW TO ACHIEVE MATCHING</div>
+    <div class="fix-text"><strong>Stackup calculator</strong> se 50Ω set karo. USB/HDMI = <strong>100Ω differential</strong>. Connector ke neeche <strong>cutout shapes</strong> — shoes ka perfect fit silwane jaisa!</div>
+  </div>
+  <div class="canvas-container">
+    <canvas id="canvas-impedance" width="800" height="350"></canvas>
+  </div>
+  <p style="margin-top: 10px;">When Z<sub>L</sub> = Z<sub>0</sub>, reflections are eliminated — maximum power transfer is achieved.</p>
+  <div style="margin-top: 8px;">
+    <span class="tag tag-green">Matched: Γ = 0</span>
+    <span class="tag tag-red">Open: Γ = +1</span>
+    <span class="tag tag-blue">Short: Γ = -1</span>
+  </div>
+</div>
+
+<!-- SLIDE 5: Crosstalk -->
+<div class="slide" id="slide-5">
+  <h2>Crosstalk</h2>
+  <div class="def-box">
+    <div class="def-label">SIMPLE DEFINITION</div>
+    <div class="def-text">Exam mein bagal wala <strong>cheat kar raha hai</strong> aur aap us ki awaaz sun rahe ho — <strong>concentration kharab!</strong> Ek trace ka signal dusri trace mein chala jaye = <strong>Crosstalk</strong>. Trace jitni kareeb, utna zyada "cheating"!</div>
+  </div>
+  <div class="fix-box">
+    <div class="fix-label">HOW TO REDUCE CROSSTALK</div>
+    <div class="fix-text"><strong>3x trace width</strong> distance = <strong>Social Distancing!</strong> Ground guard trace beech mein = <strong>Mask pehnana!</strong> Clock kabhi data ke saath parallel mat bhagna — <strong>exam mein ek hi table pe mat baithna!</strong></div>
+  </div>
+  <div class="canvas-container">
+    <canvas id="canvas-crosstalk" width="800" height="350"></canvas>
+  </div>
+  <div class="two-col" style="margin-top: 10px;">
+    <div class="col">
+      <h3>NEXT (Near-End)</h3>
+      <p class="small-text">Coupled noise at the source end. Adds constructively — typically the larger component.</p>
+    </div>
+    <div class="col">
+      <h3>FEXT (Far-End)</h3>
+      <p class="small-text">Coupled noise at the receiver end. Depends on trace length & signal edge rate.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: Eye Diagrams -->
+<div class="slide" id="slide-6">
+  <h2>Eye Diagrams</h2>
+  <div class="def-box">
+    <div class="def-label">SIMPLE DEFINITION</div>
+    <div class="def-text">Doctor ke paas <strong>eye test</strong> — aankh khuli hai toh signal <strong>healthy</strong>, band ho rahi hai toh <strong>"chashma lagao!"</strong> Eye diagram signal ki health checkup hai — bada khula aankh = signal fit hai!</div>
+  </div>
+  <div class="fix-box">
+    <div class="fix-label">HOW TO OPEN A CLOSED EYE</div>
+    <div class="fix-text"><strong>Closed eye? Chashma pehnao!</strong> = Crystal oscillator lagao (RC nahi). Decoupling caps chip ke paas rakhna. Edge rate slow karo series resistor se. Aur agar phir bhi nahi khula toh <strong>pre-emphasis ka "laser surgery"</strong> bhi hai!</div>
+  </div>
+  <div class="canvas-container">
+    <canvas id="canvas-eye" width="800" height="350"></canvas>
+  </div>
+  <div style="margin-top: 10px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+    <span class="tag tag-green">Jitter</span>
+    <span class="tag tag-blue">Rise/Fall Time</span>
+    <span class="tag tag-purple">Signal-to-Noise Ratio</span>
+    <span class="tag tag-red">Bit Error Rate (BER)</span>
+  </div>
+</div>
+
+<!-- SLIDE 7: Termination Strategies -->
+<div class="slide" id="slide-7">
+  <h2>Termination Strategies</h2>
+  <div class="def-box">
+    <div class="def-label">SIMPLE DEFINITION</div>
+    <div class="def-text">Story ke end mein <strong>Full Stop "."</strong> lagao — warna sentence kabhi khatam nahi hoga! Termination = signal ke end pe resistor lagana taake woh <strong>wapas na aaye</strong> aur ringing na kare.</div>
+  </div>
+  <div class="fix-box">
+    <div class="fix-label">WHICH ONE TO USE — REAL EXAMPLE</div>
+    <div class="fix-text"><strong>DDR clock:</strong> 33Ω series at CPU. <strong>PCIe/HDMI:</strong> 100Ω diff at receiver. <strong>Clock:</strong> AC termination (power bachata hai). <strong>Yaad rakho:</strong> Resistor JAHAN lagana hai WAHAN lagana hai — <strong>500 mils door matlab compromise!</strong></div>
+  </div>
+  <div class="two-col">
+    <div class="col">
+      <div class="canvas-container" style="height: 300px;">
+        <canvas id="canvas-term" width="800" height="300"></canvas>
+      </div>
+    </div>
+    <div class="col">
+      <h3>Common Methods</h3>
+      <ul>
+        <li><strong>Series:</strong> Source-side resistor (most common)</li>
+        <li><strong>Parallel:</strong> Receiver-side to VCC/GND</li>
+        <li><strong>Thevenin:</strong> Split termination to VCC & GND</li>
+        <li><strong>AC:</strong> Capacitor in series — saves DC power</li>
+      </ul>
+      <div class="formula-box" style="margin-top: 10px;">R_term ≈ Z₀</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: EMI & EMC -->
+<div class="slide" id="slide-8">
+  <h2>EMI & EMC</h2>
+  <div class="def-box">
+    <div class="def-label">SIMPLE DEFINITION</div>
+    <div class="def-text">Raat <strong>3 baje DJ baja rahe ho</strong> aur padosi ne police bulayi — yeh <strong>EMI</strong> hai! Aapka board shor machata hai. <strong>EMC</strong> = padosi ko disturb mat karo, aur khud bhi kisi ke shor se pareshan mat ho. <strong>Achha neighbour bano!</strong></div>
+  </div>
+  <div class="fix-box">
+    <div class="fix-label">HOW TO PASS EMI TESTING</div>
+    <div class="fix-text"><strong>Ground plane = aapka bodyguard.</strong> Ferrite bead = noise ka maskan. Stitching via = boundary wall. <strong>Inke bina board testing fail!</strong> Switching loops chhota rakho — decoupling caps chip ke moo pe lagao!</div>
+  </div>
+  <div class="canvas-container">
+    <canvas id="canvas-emi" width="800" height="350"></canvas>
+  </div>
+  <div class="two-col" style="margin-top: 10px;">
+    <div class="col">
+      <h3>EMI Sources</h3>
+      <ul>
+        <li>High di/dt switching currents</li>
+        <li>Impedance mismatches</li>
+        <li>Loop antenna effects</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h3>Mitigation</h3>
+      <ul>
+        <li>Proper stackup & reference planes</li>
+        <li>Controlled impedance routing</li>
+        <li>Shielding & filtering</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: Power Integrity -->
+<div class="slide" id="slide-9">
+  <h2>Power Integrity</h2>
+  <div class="def-box">
+    <div class="def-label">SIMPLE DEFINITION</div>
+    <div class="def-text">Jab aap <strong>AC on karte ho aur light dim</strong> ho jati hai — yeh Power Integrity ka issue hai! Har chip ko clean 3.3V chahiye, <strong>fluctuation nahi chalega.</strong> "Sab ko ek jaisi roti milegi" — yeh PI ka motto hai!</div>
+  </div>
+  <div class="fix-box">
+    <div class="fix-label">HOW TO FIX POWER INTEGRITY</div>
+    <div class="fix-text"><strong>100nF + 10µF caps chip ke moo pe</strong> — 2mm se zyada door nahi! Bulk caps (47-100µF) board ke gate pe. <strong>Solid power/ground planes — split mat karna!</strong> PDN simulate karo, flat response below Z_target chahiye.</div>
+  </div>
+  <div class="canvas-container">
+    <canvas id="canvas-pi" width="800" height="350"></canvas>
+  </div>
+  <p style="margin-top: 10px;">PDN (Power Distribution Network) impedance must be below the target impedance across the entire frequency range to maintain stable voltage delivery.</p>
+  <div class="formula-box" style="margin-top: 8px;">Z_target = ΔV_allowed / ΔI_max</div>
+</div>
+
+<!-- SLIDE 10: Via Effects -->
+<div class="slide" id="slide-10">
+  <h2>Via Effects in High-Speed Design</h2>
+  <div class="def-box">
+    <div class="def-label">SIMPLE DEFINITION</div>
+    <div class="def-text">Highway chal rahe the aur <strong>achanak speed breaker + pothole</strong> aa gaya — yeh <strong>Via</strong> hai! Layer change karte waqt signal ko <strong>"dhachka"</strong> lagta hai. Via = signal ka laacha (bump) jo mushkil mein daalta hai!</div>
+  </div>
+  <div class="fix-box">
+    <div class="fix-label">HOW TO MINIMIZE VIA DAMAGE</div>
+    <div class="fix-text"><strong>Back-drill = via ka extra hissa kaat do!</strong> Ground return via = bodyguard har signal via ke saath. Micro-vias = aam se chhota, kam nuksan. <strong>Critical nets pe via kam = kam speed breaker = smooth drive!</strong></div>
+  </div>
+  <div class="two-col">
+    <div class="col">
+      <div class="canvas-container" style="height: 280px;">
+        <canvas id="canvas-via" width="800" height="280"></canvas>
+      </div>
+    </div>
+    <div class="col">
+      <h3>Key Issues</h3>
+      <ul>
+        <li><strong>Parasitic Capacitance:</strong> ~0.3-0.8 pF per via — slows edges</li>
+        <li><strong>Parasitic Inductance:</strong> ~0.5-1.0 nH — causes resonance</li>
+        <li><strong>Impedance Discontinuity:</strong> 10-30% local impedance shift</li>
+        <li><strong>Stub Resonance:</strong> Unused via portion acts as antenna</li>
+      </ul>
+      <h3 style="margin-top: 10px;">Solutions</h3>
+      <ul>
+        <li>Back-drill stubs to reduce resonance</li>
+        <li>Use micro-vias for minimal parasitics</li>
+        <li>Add return-path vias nearby (stitching)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: AI in SI -->
+<div class="slide" id="slide-11">
+  <h2>AI in Signal Integrity</h2>
+  <div class="def-box">
+    <div class="def-label">SIMPLE DEFINITION</div>
+    <div class="def-text">Jo student exam se pehle <strong>past papers solve karta hai</strong>, woh paper mein aasaani se crack kar leta — <strong>AI bhi yahi karta hai!</strong> Hazaaron designs seekh ke instant answer de deta hai. <strong>"Topper student"</strong> jo pehle se sab jaanta hai!</div>
+  </div>
+  <div class="fix-box">
+    <div class="fix-label">HOW AI HELPS YOU RIGHT NOW</div>
+    <div class="fix-text"><strong>Cadence Sigrity = SI ka doctor.</strong> Ansys SIwave = future predictor. AI copilot = termination value suggest karta hai. <strong>Apna model bhi bana sakte ho</strong> Python + TensorFlow se — exam se pehle past paper solve karne jaisa!</div>
+  </div>
+  <div class="two-col">
+    <div class="col">
+      <div class="canvas-container" style="height: 300px;">
+        <canvas id="canvas-ai" width="800" height="300"></canvas>
+      </div>
+    </div>
+    <div class="col">
+      <h3>How AI Transforms SI</h3>
+      <ul>
+        <li><strong>ML-based modeling:</strong> Fast S-parameter prediction</li>
+        <li><strong>Deep Learning:</strong> Eye diagram estimation from layout</li>
+        <li><strong>Reinforcement Learning:</strong> Auto-routing optimization</li>
+        <li><strong>Generative AI:</strong> Design rule suggestions</li>
+        <li><strong>Anomaly Detection:</strong> Manufacturing defect prediction</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: Summary -->
+<div class="slide" id="slide-12">
+  <h2>Summary</h2>
+  <div class="def-box">
+    <div class="def-label">KEY REMINDER</div>
+    <div class="def-text">Signal Integrity ka summary ek line mein: <strong>"Signal ko sahi shape mein, sahi time pe, bina kisi ko disturb kiye pahuncho!"</strong> Bas yahi yaad rakho — baaki sab is se nikalta hai!</div>
+  </div>
+  <div class="two-col" style="max-width: 900px;">
+    <div class="col">
+      <h3>Key Takeaways</h3>
+      <ul>
+        <li>SI is critical for all modern digital designs</li>
+        <li>Reflections arise from impedance mismatches</li>
+        <li>Crosstalk managed via spacing & guard traces</li>
+        <li>Eye diagrams give a quick quality check</li>
+        <li>AI accelerates SI analysis & design</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h3>Design Checklist</h3>
+      <ul>
+        <li>Control impedance (50Ω single-ended)</li>
+        <li>Match trace lengths (clocked signals)</li>
+        <li>Use proper termination</li>
+        <li>Minimize via transitions</li>
+        <li>Keep return paths short</li>
+      </ul>
+    </div>
+  </div>
+  <p class="subtitle" style="margin-top: 30px;">Thank You!</p>
+  <p class="small-text" style="color: #7b9dff;">Prepared for Rizwan</p>
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+  <button onclick="prevSlide()">◀ Prev</button>
+  <span class="slide-counter" id="slideCounter">1 / 13</span>
+  <button onclick="nextSlide()">Next ▶</button>
+</div>
+
+<script>
+// ============ SLIDE NAVIGATION ============
+let currentSlide = 0;
+const totalSlides = 13;
+const slides = document.querySelectorAll('.slide');
+
+function showSlide(n) {
+  slides.forEach(s => s.classList.remove('active'));
+  currentSlide = Math.max(0, Math.min(n, totalSlides - 1));
+  slides[currentSlide].classList.add('active');
+  document.getElementById('slideCounter').textContent = `${currentSlide + 1} / ${totalSlides}`;
+  document.getElementById('progressBar').style.width = `${((currentSlide + 1) / totalSlides) * 100}%`;
+  initAnimation(currentSlide);
+}
+
+function nextSlide() { showSlide(currentSlide + 1); }
+function prevSlide() { showSlide(currentSlide - 1); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+  if (e.key === 'ArrowLeft') prevSlide();
+});
+
+// ============ NEURAL NETWORK BACKGROUND ============
+const bgCanvas = document.getElementById('bg-canvas');
+const bgCtx = bgCanvas.getContext('2d');
+let bgNodes = [];
+
+function resizeBg() {
+  bgCanvas.width = window.innerWidth;
+  bgCanvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeBg);
+resizeBg();
+
+for (let i = 0; i < 60; i++) {
+  bgNodes.push({
+    x: Math.random() * bgCanvas.width,
+    y: Math.random() * bgCanvas.height,
+    vx: (Math.random() - 0.5) * 0.5,
+    vy: (Math.random() - 0.5) * 0.5,
+    r: Math.random() * 2 + 1
+  });
+}
+
+function drawBg() {
+  bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+  // connections
+  for (let i = 0; i < bgNodes.length; i++) {
+    for (let j = i + 1; j < bgNodes.length; j++) {
+      const dx = bgNodes[i].x - bgNodes[j].x;
+      const dy = bgNodes[i].y - bgNodes[j].y;
+      const d = Math.sqrt(dx*dx + dy*dy);
+      if (d < 200) {
+        bgCtx.strokeStyle = `rgba(0, 240, 255, ${0.15 * (1 - d/200)})`;
+        bgCtx.lineWidth = 0.5;
+        bgCtx.beginPath();
+        bgCtx.moveTo(bgNodes[i].x, bgNodes[i].y);
+        bgCtx.lineTo(bgNodes[j].x, bgNodes[j].y);
+        bgCtx.stroke();
+      }
+    }
+  }
+  // nodes
+  bgNodes.forEach(n => {
+    n.x += n.vx; n.y += n.vy;
+    if (n.x < 0 || n.x > bgCanvas.width) n.vx *= -1;
+    if (n.y < 0 || n.y > bgCanvas.height) n.vy *= -1;
+    bgCtx.fillStyle = `rgba(0, 240, 255, 0.5)`;
+    bgCtx.beginPath();
+    bgCtx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+    bgCtx.fill();
+  });
+  requestAnimationFrame(drawBg);
+}
+drawBg();
+
+// ============ ANIMATION MANAGERS ============
+const animFrames = {};
+let globalTime = 0;
+
+function initAnimation(slideIndex) {
+  // Cancel old animations
+  Object.values(animFrames).forEach(id => cancelAnimationFrame(id));
+  for (let k in animFrames) delete animFrames[k];
+  globalTime = 0;
+
+  switch(slideIndex) {
+    case 1: animSIOverview(); break;
+    case 2: animTLine(); break;
+    case 3: animReflection(); break;
+    case 4: animImpedance(); break;
+    case 5: animCrosstalk(); break;
+    case 6: animEye(); break;
+    case 7: animTermination(); break;
+    case 8: animEMI(); break;
+    case 9: animPI(); break;
+    case 10: animVia(); break;
+    case 11: animAI(); break;
+  }
+}
+
+// Helper: get context
+function getCtx(id) {
+  const c = document.getElementById(id);
+  if (!c) return null;
+  return c.getContext('2d');
+}
+
+// ============ FUN HELPER: Draw Emoji Face ============
+function drawFace(ctx, x, y, size, type, t) {
+  // type: 'happy', 'sad', 'angry', 'shocked', 'cool', 'wink'
+  ctx.save();
+  ctx.lineWidth = 1.5;
+
+  // Face circle
+  const colors = {
+    happy: '#4dff88', sad: '#4da8ff', angry: '#ff4444',
+    shocked: '#ffcc00', cool: '#00f0ff', wink: '#7b2dff'
+  };
+  const c = colors[type] || '#4dff88';
+
+  // Bounce effect
+  const bounce = Math.sin(t * 3) * 2;
+
+  ctx.fillStyle = c + '30';
+  ctx.strokeStyle = c;
+  ctx.beginPath();
+  ctx.arc(x, y + bounce, size, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+
+  const r = size * 0.35;
+  ctx.fillStyle = c;
+
+  if (type === 'happy') {
+    // Eyes - arcs
+    ctx.beginPath();
+    ctx.arc(x - r * 0.7, y - r * 0.3 + bounce, r * 0.25, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x + r * 0.7, y - r * 0.3 + bounce, r * 0.25, 0, Math.PI * 2);
+    ctx.fill();
+    // Smile
+    ctx.strokeStyle = c;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(x, y + r * 0.15 + bounce, r * 0.6, 0.15 * Math.PI, 0.85 * Math.PI);
+    ctx.stroke();
+  } else if (type === 'sad') {
+    // Eyes
+    ctx.beginPath();
+    ctx.arc(x - r * 0.7, y - r * 0.3 + bounce, r * 0.25, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x + r * 0.7, y - r * 0.3 + bounce, r * 0.25, 0, Math.PI * 2);
+    ctx.fill();
+    // Frown
+    ctx.strokeStyle = c;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(x, y + r * 0.9 + bounce, r * 0.5, 1.15 * Math.PI, 1.85 * Math.PI);
+    ctx.stroke();
+    // Tear
+    ctx.fillStyle = '#4da8ff80';
+    ctx.beginPath();
+    ctx.arc(x + r * 0.8, y + r * 0.1 + bounce, r * 0.15, 0, Math.PI * 2);
+    ctx.fill();
+  } else if (type === 'angry') {
+    // Angry eyes (lines)
+    ctx.strokeStyle = c;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x - r * 1.1, y - r * 0.6 + bounce);
+    ctx.lineTo(x - r * 0.3, y - r * 0.2 + bounce);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x + r * 1.1, y - r * 0.6 + bounce);
+    ctx.lineTo(x + r * 0.3, y - r * 0.2 + bounce);
+    ctx.stroke();
+    // Eyes
+    ctx.fillStyle = c;
+    ctx.beginPath();
+    ctx.arc(x - r * 0.7, y + r * 0.1 + bounce, r * 0.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x + r * 0.7, y + r * 0.1 + bounce, r * 0.2, 0, Math.PI * 2);
+    ctx.fill();
+    // Angry mouth
+    ctx.strokeStyle = c;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(x, y + r * 0.9 + bounce, r * 0.5, 1.15 * Math.PI, 1.85 * Math.PI);
+    ctx.stroke();
+  } else if (type === 'shocked') {
+    // Big round eyes
+    ctx.strokeStyle = c;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(x - r * 0.6, y - r * 0.2 + bounce, r * 0.3, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(x + r * 0.6, y - r * 0.2 + bounce, r * 0.3, 0, Math.PI * 2);
+    ctx.stroke();
+    // O mouth
+    ctx.beginPath();
+    ctx.arc(x, y + r * 0.6 + bounce, r * 0.35, 0, Math.PI * 2);
+    ctx.stroke();
+  } else if (type === 'cool') {
+    // Sunglasses
+    ctx.fillStyle = c + '80';
+    ctx.fillRect(x - r * 1.1, y - r * 0.5 + bounce, r * 0.8, r * 0.5);
+    ctx.fillRect(x + r * 0.3, y - r * 0.5 + bounce, r * 0.8, r * 0.5);
+    ctx.strokeStyle = c;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(x - r * 0.3, y - r * 0.25 + bounce);
+    ctx.lineTo(x + r * 0.3, y - r * 0.25 + bounce);
+    ctx.stroke();
+    ctx.strokeRect(x - r * 1.1, y - r * 0.5 + bounce, r * 0.8, r * 0.5);
+    ctx.strokeRect(x + r * 0.3, y - r * 0.5 + bounce, r * 0.8, r * 0.5);
+    // Smirk
+    ctx.beginPath();
+    ctx.arc(x + r * 0.2, y + r * 0.4 + bounce, r * 0.5, 0.05 * Math.PI, 0.45 * Math.PI);
+    ctx.stroke();
+  } else if (type === 'wink') {
+    // One open eye
+    ctx.fillStyle = c;
+    ctx.beginPath();
+    ctx.arc(x - r * 0.7, y - r * 0.3 + bounce, r * 0.25, 0, Math.PI * 2);
+    ctx.fill();
+    // Wink eye (line)
+    ctx.strokeStyle = c;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x + r * 0.4, y - r * 0.3 + bounce);
+    ctx.lineTo(x + r * 1.0, y - r * 0.3 + bounce);
+    ctx.stroke();
+    // Smile
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(x, y + r * 0.15 + bounce, r * 0.6, 0.15 * Math.PI, 0.85 * Math.PI);
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+// ============ FUN HELPER: Draw Speech Bubble ============
+function drawBubble(ctx, x, y, text, color, t) {
+  ctx.save();
+  const w = ctx.measureText(text).width + 20;
+  const h = 24;
+  const bx = x - w / 2;
+  const bounce = Math.sin(t * 2) * 2;
+
+  ctx.fillStyle = color + '20';
+  ctx.strokeStyle = color + '60';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.roundRect(bx, y - h / 2 + bounce, w, h, 6);
+  ctx.fill();
+  ctx.stroke();
+
+  // Tail
+  ctx.fillStyle = color + '20';
+  ctx.beginPath();
+  ctx.moveTo(x - 5, y + h / 2 - 2 + bounce);
+  ctx.lineTo(x, y + h / 2 + 8 + bounce);
+  ctx.lineTo(x + 5, y + h / 2 - 2 + bounce);
+  ctx.fill();
+
+  ctx.fillStyle = color;
+  ctx.font = '11px Rajdhani';
+  ctx.textAlign = 'center';
+  ctx.fillText(text, x, y + 4 + bounce);
+  ctx.textAlign = 'start';
+  ctx.restore();
+}
+
+// ============ CIRCUIT HELPERS ============
+function drawGround(ctx, x, y, size) {
+  ctx.beginPath();
+  ctx.moveTo(x - size, y);
+  ctx.lineTo(x + size, y);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x - size * 0.6, y + 3);
+  ctx.lineTo(x + size * 0.6, y + 3);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x - size * 0.3, y + 6);
+  ctx.lineTo(x + size * 0.3, y + 6);
+  ctx.stroke();
+}
+
+function drawVSource(ctx, x, y, r, label) {
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.font = '9px Share Tech Mono';
+  ctx.fillStyle = ctx.strokeStyle;
+  ctx.textAlign = 'center';
+  ctx.fillText('+', x, y - 2);
+  ctx.fillText('−', x, y + 8);
+  if (label) ctx.fillText(label, x, y - r - 4);
+  ctx.textAlign = 'start';
+}
+
+function drawWire(ctx, x1, y1, x2, y2) {
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+}
+
+function drawNode(ctx, x, y, r) {
+  ctx.beginPath();
+  ctx.arc(x, y, r || 2, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawLabel(ctx, x, y, text, color) {
+  ctx.save();
+  ctx.font = '12px Share Tech Mono';
+  ctx.fillStyle = color || '#d0d0ee';
+  ctx.textAlign = 'center';
+  ctx.fillText(text, x, y);
+  ctx.textAlign = 'start';
+  ctx.restore();
+}
+
+// ============ SLIDE 1: SI Overview ============
+function animSIOverview() {
+  const ctx = getCtx('canvas-si-overview');
+  if (!ctx) return;
+  const W = 800, H = 160;
+
+  function draw() {
+    globalTime += 0.02;
+    ctx.fillStyle = 'rgba(5,5,30,0.95)';
+    ctx.fillRect(0, 0, W, H);
+
+    // --- LEFT: When does trace become T-line? ---
+    // Draw a trace getting longer
+    const traceLen = 30 + ((globalTime * 20) % 200);
+    const tLineY = 50;
+
+    // Short trace (safe) — left side
+    ctx.strokeStyle = '#4dff88';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(30, tLineY);
+    ctx.lineTo(30 + Math.min(traceLen, 80), tLineY);
+    ctx.stroke();
+    ctx.fillStyle = '#4dff88';
+    ctx.font = '9px Share Tech Mono';
+    ctx.fillText('SHORT TRACE', 30, tLineY - 12);
+    ctx.fillText('(< 1 inch)', 35, tLineY + 20);
+    drawFace(ctx, 80 + Math.min(traceLen, 80) + 15, tLineY, 8, 'happy', globalTime);
+    ctx.fillStyle = '#4dff8880';
+    ctx.fillText('= Simple wire', 30, tLineY + 32);
+
+    // Long trace (T-line!) — right side
+    ctx.strokeStyle = '#ff2d7b';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(250, tLineY);
+    ctx.lineTo(250 + Math.min(traceLen * 2, 250), tLineY);
+    ctx.stroke();
+    ctx.fillStyle = '#ff2d7b';
+    ctx.fillText('LONG TRACE', 250, tLineY - 12);
+    ctx.fillText('(> 1 inch @ 1ns Tr)', 255, tLineY + 20);
+    drawFace(ctx, 250 + Math.min(traceLen * 2, 250) + 15, tLineY, 8, 'angry', globalTime);
+    ctx.fillStyle = '#ff2d7b80';
+    ctx.fillText('= Transmission Line!', 250, tLineY + 32);
+
+    // Threshold line
+    const threshX = 560;
+    ctx.strokeStyle = '#ffcc0060';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath();
+    ctx.moveTo(threshX, 20);
+    ctx.lineTo(threshX, 85);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#ffcc00';
+    ctx.font = 'bold 9px Share Tech Mono';
+    ctx.fillText('THRESHOLD', threshX + 5, 35);
+    ctx.font = '8px Share Tech Mono';
+    ctx.fillText('L > Tr×v/6', threshX + 5, 48);
+    ctx.fillText('1ns → 1 inch', threshX + 5, 60);
+    ctx.fillText('500ps → 0.5"', threshX + 5, 72);
+    ctx.fillText('100ps → 0.1"', threshX + 5, 84);
+
+    // --- BOTTOM: Rise time comparison signals ---
+    const sigY = 120;
+    // Slow signal (clean)
+    ctx.strokeStyle = '#4dff88';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    for (let x = 0; x < 180; x++) {
+      const t = x / 180;
+      let y = sigY;
+      if (t > 0.3) y = sigY - 25 * (1 - Math.exp(-(t - 0.3) * 8));
+      x === 0 ? ctx.moveTo(30 + x, y) : ctx.lineTo(30 + x, y);
+    }
+    ctx.stroke();
+    ctx.fillStyle = '#4dff88';
+    ctx.font = '9px Share Tech Mono';
+    ctx.fillText('Slow rise (10ns) — No T-line effect', 30, sigY + 18);
+
+    // Fast signal (ringing)
+    ctx.strokeStyle = '#ff4444';
+    ctx.beginPath();
+    for (let x = 0; x < 180; x++) {
+      const t = x / 180;
+      let y = sigY;
+      if (t > 0.05) {
+        const base = -25 * (1 - Math.exp(-(t - 0.05) * 30));
+        const ring = Math.sin((t - 0.05) * 80) * 8 * Math.exp(-(t - 0.05) * 10);
+        y = sigY + base + ring;
+      }
+      x === 0 ? ctx.moveTo(560 + x, y) : ctx.lineTo(560 + x, y);
+    }
+    ctx.stroke();
+    ctx.fillStyle = '#ff4444';
+    ctx.fillText('Fast rise (100ps) — Ringing!', 560, sigY + 18);
+
+    // Arrow showing the difference
+    ctx.strokeStyle = '#7b9dff40';
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath();
+    ctx.moveTo(390, sigY - 10);
+    ctx.lineTo(555, sigY - 10);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#7b9dff60';
+    ctx.font = '8px Share Tech Mono';
+    ctx.fillText('Rise time → 0', 430, sigY - 14);
+
+    // Fun bubble
+    drawBubble(ctx, 700, sigY - 5, 'DHACHKA!', '#ff4444', globalTime);
+
+    animFrames['si'] = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ============ SLIDE 2: Transmission Line ============
+function animTLine() {
+  const ctx = getCtx('canvas-tline');
+  if (!ctx) return;
+  const W = 800, H = 350;
+
+  function draw() {
+    globalTime += 0.02;
+    ctx.fillStyle = 'rgba(5,5,30,0.95)';
+    ctx.fillRect(0, 0, W, H);
+
+    const segments = 12;
+    const segW = 50;
+    const startX = 80;
+    const yTop = 80;
+    const yBot = 230;
+
+    for (let i = 0; i < segments; i++) {
+      const x = startX + i * segW;
+      const pulse = Math.sin(globalTime * 3 - i * 0.5) * 0.5 + 0.5;
+
+      // Resistor (top)
+      ctx.strokeStyle = `rgba(0, 240, 255, ${0.4 + pulse * 0.6})`;
+      ctx.lineWidth = 2;
+      drawResistor(ctx, x + 10, yTop, x + segW - 10, yTop);
+
+      // Capacitor (vertical)
+      ctx.strokeStyle = `rgba(255, 45, 123, ${0.4 + pulse * 0.6})`;
+      drawCapacitor(ctx, x + 25, yTop + 40, x + 25, yBot - 20);
+
+      // Inductor (bottom)
+      ctx.strokeStyle = `rgba(123, 45, 255, ${0.4 + pulse * 0.6})`;
+      ctx.lineWidth = 1.5;
+      drawInductor(ctx, x + 10, yBot, x + segW - 10, yBot);
+
+      // Conductance (vertical)
+      ctx.strokeStyle = `rgba(255, 200, 0, ${0.3 + pulse * 0.3})`;
+      drawResistor(ctx, x + 25, yBot - 20, x + 25, yBot + 20);
+
+      // Labels
+      if (i === 0) {
+        ctx.fillStyle = '#00f0ff'; ctx.font = '11px Share Tech Mono';
+        ctx.fillText('R', x + 20, yTop - 10);
+        ctx.fillStyle = '#ff2d7b';
+        ctx.fillText('C', x + 38, yTop + 60);
+        ctx.fillStyle = '#7b2dff';
+        ctx.fillText('L', x + 20, yBot + 35);
+        ctx.fillStyle = '#ffcc00';
+        ctx.fillText('G', x + 38, yBot - 5);
+      }
+
+      // Connecting dots glow
+      const glow = ctx.createRadialGradient(x + 25, yTop, 0, x + 25, yTop, 8);
+      glow.addColorStop(0, `rgba(0, 240, 255, ${0.5 + pulse * 0.5})`);
+      glow.addColorStop(1, 'rgba(0, 240, 255, 0)');
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(x + 25, yTop, 8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Signal wave traveling
+    ctx.strokeStyle = '#00ff88';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let x = 0; x < 600; x++) {
+      const sx = startX + (x / 600) * segments * segW;
+      const sy = 310 + Math.sin(x * 0.03 - globalTime * 4) * 15;
+      x === 0 ? ctx.moveTo(sx, sy) : ctx.lineTo(sx, sy);
+    }
+    ctx.stroke();
+    ctx.fillStyle = '#00ff88';
+    ctx.font = '11px Share Tech Mono';
+    ctx.fillText('Traveling Wave v(t)', startX + 200, 330);
+
+    // Fun face on the wave
+    const waveFaceX = startX + 300;
+    const waveFaceY = 310 + Math.sin(300 * 0.03 - globalTime * 4) * 15;
+    drawFace(ctx, waveFaceX, waveFaceY - 15, 10, 'happy', globalTime);
+    drawBubble(ctx, waveFaceX, waveFaceY - 32, 'Weeee!', '#00ff88', globalTime);
+
+    // Grumpy face at a speed breaker
+    const bumpX = startX + 4 * segW + 25;
+    drawFace(ctx, bumpX, yTop - 25, 8, 'angry', globalTime + 1);
+    drawBubble(ctx, bumpX, yTop - 48, 'Speed breaker!', '#ffcc00', globalTime + 1);
+
+    // === WHY R, L, C, G? — Visual Explanation on the right side ===
+    ctx.save();
+    const expX = 720, expBaseY = 50;
+    ctx.font = 'bold 10px Share Tech Mono';
+
+    // R explanation — copper resistance
+    ctx.strokeStyle = '#00f0ff60';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(expX - 30, expBaseY);
+    ctx.lineTo(expX - 10, expBaseY);
+    ctx.stroke();
+    ctx.strokeStyle = '#ff880060';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    // heat waves above the trace
+    for (let i = 0; i < 3; i++) {
+      const hx = expX - 28 + i * 10;
+      const hy = expBaseY - 6 - Math.sin(globalTime * 4 + i) * 3;
+      ctx.beginPath();
+      ctx.arc(hx, hy, 2, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.fillStyle = '#ff8800';
+    ctx.font = 'bold 10px Share Tech Mono';
+    ctx.fillText('R', expX + 2, expBaseY + 4);
+    ctx.font = '8px Rajdhani';
+    ctx.fillStyle = '#ff880090';
+    ctx.fillText('Copper resist', expX + 15, expBaseY - 2);
+    ctx.fillText('= garmi (heat)', expX + 15, expBaseY + 10);
+
+    // L explanation — magnetic field
+    const lY = expBaseY + 55;
+    ctx.strokeStyle = '#7b2dff60';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(expX - 30, lY);
+    ctx.lineTo(expX - 10, lY);
+    ctx.stroke();
+    // magnetic field rings
+    for (let i = 0; i < 3; i++) {
+      const fr = 6 + i * 4 + Math.sin(globalTime * 3 + i) * 2;
+      ctx.strokeStyle = `rgba(123, 45, 255, ${0.3 - i * 0.08})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(expX - 20, lY, fr, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.fillStyle = '#7b2dff';
+    ctx.font = 'bold 10px Share Tech Mono';
+    ctx.fillText('L', expX + 2, lY + 4);
+    ctx.font = '8px Rajdhani';
+    ctx.fillStyle = '#7b2dff90';
+    ctx.fillText('Current → B-field', expX + 15, lY - 2);
+    ctx.fillText('= speed breaker!', expX + 15, lY + 10);
+
+    // C explanation — trace + ground = capacitor
+    const cY = expBaseY + 110;
+    // trace
+    ctx.strokeStyle = '#ff2d7b60';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(expX - 30, cY - 6);
+    ctx.lineTo(expX - 10, cY - 6);
+    ctx.stroke();
+    // FR4 dielectric
+    ctx.fillStyle = '#4dff8820';
+    ctx.fillRect(expX - 32, cY - 4, 24, 8);
+    ctx.strokeStyle = '#4dff8840';
+    ctx.strokeRect(expX - 32, cY - 4, 24, 8);
+    ctx.font = '6px Share Tech Mono';
+    ctx.fillStyle = '#4dff8860';
+    ctx.fillText('FR4', expX - 26, cY + 1);
+    // ground plane
+    ctx.strokeStyle = '#4dff8860';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(expX - 32, cY + 8);
+    ctx.lineTo(expX - 8, cY + 8);
+    ctx.stroke();
+    ctx.fillStyle = '#ff2d7b';
+    ctx.font = 'bold 10px Share Tech Mono';
+    ctx.fillText('C', expX + 2, cY + 2);
+    ctx.font = '8px Rajdhani';
+    ctx.fillStyle = '#ff2d7b90';
+    ctx.fillText('Trace + GND plate', expX + 15, cY - 4);
+    ctx.fillText('= chhota capacitor!', expX + 15, cY + 8);
+
+    // G explanation — leakage through dielectric
+    const gY = expBaseY + 165;
+    ctx.strokeStyle = '#ffcc0060';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(expX - 30, gY);
+    ctx.lineTo(expX - 10, gY);
+    ctx.stroke();
+    // leakage drops
+    const dropT = globalTime * 3;
+    for (let i = 0; i < 3; i++) {
+      const dy = (dropT + i * 0.3) % 1;
+      ctx.fillStyle = `rgba(255, 200, 0, ${0.4 - dy * 0.4})`;
+      ctx.beginPath();
+      ctx.arc(expX - 24 + i * 8, gY + 5 + dy * 12, 1.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.fillStyle = '#ffcc00';
+    ctx.font = 'bold 10px Share Tech Mono';
+    ctx.fillText('G', expX + 2, gY + 4);
+    ctx.font = '8px Rajdhani';
+    ctx.fillStyle = '#ffcc0090';
+    ctx.fillText('FR4 leakage', expX + 15, gY - 2);
+    ctx.fillText('= tapakta pipe!', expX + 15, gY + 10);
+
+    // Bottom summary
+    ctx.fillStyle = '#b0b0dd50';
+    ctx.font = '9px Rajdhani';
+    ctx.fillText('Har mm pe yeh sab mil ke', expX - 40, expBaseY + 200);
+    ctx.fillText('ek chhota circuit banate hain!', expX - 40, expBaseY + 212);
+
+    // Fun face — confused trace
+    drawFace(ctx, expX - 5, expBaseY + 230, 10, 'shocked', globalTime);
+    drawBubble(ctx, expX - 5, expBaseY + 210, 'Main wire tha!', '#b0b0dd', globalTime);
+
+    ctx.restore();
+
+    animFrames['tline'] = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+function drawResistor(ctx, x1, y1, x2, y2) {
+  const dx = x2 - x1, dy = y2 - y1;
+  const len = Math.sqrt(dx*dx + dy*dy);
+  const angle = Math.atan2(dy, dx);
+  ctx.save();
+  ctx.translate(x1, y1);
+  ctx.rotate(angle);
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  const zigzags = 5;
+  const step = len / (zigzags * 2 + 2);
+  ctx.lineTo(step, 0);
+  for (let i = 0; i < zigzags; i++) {
+    ctx.lineTo(step + (i * 2 + 1) * step, (i % 2 === 0 ? -6 : 6));
+    ctx.lineTo(step + (i * 2 + 2) * step, (i % 2 === 0 ? 6 : -6));
+  }
+  ctx.lineTo(len - step, 0);
+  ctx.lineTo(len, 0);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawCapacitor(ctx, x1, y1, x2, y2) {
+  const midY = (y1 + y2) / 2;
+  ctx.beginPath();
+  ctx.moveTo(x1, y1); ctx.lineTo(x1, midY - 5);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x1 - 8, midY - 5); ctx.lineTo(x1 + 8, midY - 5);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x1 - 8, midY + 5); ctx.lineTo(x1 + 8, midY + 5);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x1, midY + 5); ctx.lineTo(x1, y2);
+  ctx.stroke();
+}
+
+function drawInductor(ctx, x1, y1, x2, y2) {
+  const dx = x2 - x1;
+  const coils = 4;
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  for (let i = 0; i <= 40; i++) {
+    const t = i / 40;
+    ctx.lineTo(x1 + t * dx, y1 + Math.sin(t * coils * Math.PI * 2) * 5);
+  }
+  ctx.stroke();
+}
+
+// ============ SLIDE 3: Reflection ============
+function animReflection() {
+  const ctx = getCtx('canvas-reflection');
+  if (!ctx) return;
+  const W = 800, H = 350;
+
+  function draw() {
+    globalTime += 0.015;
+    ctx.fillStyle = 'rgba(5,5,30,0.95)';
+    ctx.fillRect(0, 0, W, H);
+
+    // Timeline divider
+    ctx.strokeStyle = 'rgba(123, 157, 255, 0.2)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(W/2, 10);
+    ctx.lineTo(W/2, H - 10);
+    ctx.stroke();
+
+    // Labels
+    ctx.fillStyle = '#00f0ff';
+    ctx.font = 'bold 14px Orbitron';
+    ctx.fillText('GOOD: Matched', 60, 30);
+    ctx.fillStyle = '#ff4444';
+    ctx.fillText('BAD: Mismatched', W/2 + 60, 30);
+
+    // --- Left: Matched signal ---
+    const baseY = 100;
+    ctx.strokeStyle = '#00ff88';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let x = 40; x < W/2 - 30; x++) {
+      const t = (x - 40) / (W/2 - 70);
+      let y = baseY;
+      if (t > 0.2 && t < 0.8) y = baseY - 50;
+      if (x === 40) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.fillStyle = '#00ff88';
+    ctx.font = '11px Share Tech Mono';
+    ctx.fillText('Clean step, no ringing', 60, 160);
+
+    // Matched wave
+    ctx.strokeStyle = '#00ff88';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    for (let x = 40; x < W/2 - 30; x++) {
+      const y = 220 + Math.sin((x - 40) * 0.04 - globalTime * 3) * 20;
+      x === 40 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.fillText('Γ = 0 (no reflection)', 120, 270);
+
+    // --- Right: Mismatched signal ---
+    ctx.strokeStyle = '#ff4444';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let x = W/2 + 40; x < W - 30; x++) {
+      const t = (x - W/2 - 40) / (W/2 - 70);
+      let y = baseY;
+      if (t > 0.15 && t < 0.85) {
+        y = baseY - 50 + Math.sin(t * 30) * 25 * Math.exp(-t * 3);
+      }
+      if (x === W/2 + 40) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.fillStyle = '#ff4444';
+    ctx.font = '11px Share Tech Mono';
+    ctx.fillText('Ringing from reflection!', W/2 + 120, 160);
+
+    // Mismatched wave
+    ctx.strokeStyle = '#ff4444';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    for (let x = W/2 + 40; x < W - 30; x++) {
+      const noise = Math.sin((x - W/2) * 0.15) * 10 * Math.sin(globalTime * 5);
+      const y = 220 + Math.sin((x - W/2 - 40) * 0.04 - globalTime * 3) * 20 + noise;
+      x === W/2 + 40 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.fillText('Γ ≠ 0 (reflected energy)', W/2 + 130, 270);
+
+    // Animated reflection pulse
+    const refX = W/2 + 40 + ((globalTime * 60) % (W/2 - 70));
+    const refGrad = ctx.createRadialGradient(refX, 310, 0, refX, 310, 15);
+    refGrad.addColorStop(0, 'rgba(255, 68, 68, 0.6)');
+    refGrad.addColorStop(1, 'rgba(255, 68, 68, 0)');
+    ctx.fillStyle = refGrad;
+    ctx.beginPath();
+    ctx.arc(refX, 310, 15, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#ff6666';
+    ctx.font = '10px Share Tech Mono';
+    ctx.fillText('Reflected pulse', W/2 + 180, 335);
+
+    // Fun faces on the good side
+    drawFace(ctx, W/4, 185, 12, 'happy', globalTime);
+    drawBubble(ctx, W/4, 158, 'Maza aa gaya!', '#00ff88', globalTime);
+
+    // Fun faces on the bad side
+    drawFace(ctx, W * 3/4, 185, 12, 'sad', globalTime);
+    drawBubble(ctx, W * 3/4, 158, 'Mujhe chakkar aa rahe!', '#ff4444', globalTime);
+
+    // Ball bouncing on the bad side
+    const ballX = W/2 + 40 + ((globalTime * 60) % (W/2 - 70));
+    const ballBounce = Math.abs(Math.sin(globalTime * 5)) * 20;
+    drawFace(ctx, ballX, 310 - ballBounce, 10, 'angry', globalTime);
+    drawBubble(ctx, ballX, 280 - ballBounce, 'WAPAS JAA!', '#ff4444', globalTime);
+
+    // CIRCUIT: Reflection circuit - Source → Z0 → ZL mismatch
+    ctx.save();
+    ctx.strokeStyle = '#7b9dff80';
+    ctx.lineWidth = 1;
+    const ry = 340;
+    // Left circuit (matched)
+    drawVSource(ctx, 100, ry, 8, '');
+    drawWire(ctx, 100, ry - 8, 100, ry - 22);
+    drawResistor(ctx, 100, ry - 22, 145, ry - 22);
+    drawLabel(ctx, 122, ry - 30, 'Z₀', '#00ff8880');
+    drawWire(ctx, 145, ry - 22, 175, ry - 22);
+    ctx.setLineDash([3, 2]);
+    drawWire(ctx, 175, ry - 22, 230, ry - 22);
+    ctx.setLineDash([]);
+    drawLabel(ctx, 200, ry - 30, '50Ω', '#00ff8880');
+    drawResistor(ctx, 230, ry - 22, 275, ry - 22);
+    drawLabel(ctx, 252, ry - 30, '50Ω', '#00ff8880');
+    drawWire(ctx, 275, ry - 22, 275, ry);
+    drawGround(ctx, 275, ry, 6);
+    drawWire(ctx, 100, ry + 8, 100, ry);
+    drawWire(ctx, 100, ry, 275, ry);
+    drawLabel(ctx, 180, ry + 12, 'Matched!', '#00ff8880');
+
+    // Right circuit (mismatched)
+    drawVSource(ctx, 500, ry, 8, '');
+    drawWire(ctx, 500, ry - 8, 500, ry - 22);
+    drawResistor(ctx, 500, ry - 22, 545, ry - 22);
+    drawLabel(ctx, 522, ry - 30, 'Z₀', '#ff444480');
+    drawWire(ctx, 545, ry - 22, 575, ry - 22);
+    ctx.setLineDash([3, 2]);
+    drawWire(ctx, 575, ry - 22, 630, ry - 22);
+    ctx.setLineDash([]);
+    drawLabel(ctx, 600, ry - 30, '50Ω', '#ff444480');
+    drawResistor(ctx, 630, ry - 22, 690, ry - 22);
+    drawLabel(ctx, 660, ry - 30, '150Ω!', '#ff444480');
+    drawWire(ctx, 690, ry - 22, 690, ry);
+    drawGround(ctx, 690, ry, 6);
+    drawWire(ctx, 500, ry + 8, 500, ry);
+    drawWire(ctx, 500, ry, 690, ry);
+    drawLabel(ctx, 590, ry + 12, 'Mismatch!', '#ff444480');
+    ctx.restore();
+
+    animFrames['refl'] = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ============ SLIDE 4: Impedance Matching ============
+function animImpedance() {
+  const ctx = getCtx('canvas-impedance');
+  if (!ctx) return;
+  const W = 800, H = 350;
+
+  function draw() {
+    globalTime += 0.02;
+    ctx.fillStyle = 'rgba(5,5,30,0.95)';
+    ctx.fillRect(0, 0, W, H);
+
+    // Three scenarios
+    const scenarios = [
+      { label: 'MATCHED', color: '#00ff88', gamma: 0, x: 130 },
+      { label: 'OPEN', color: '#ff4444', gamma: 1, x: 400 },
+      { label: 'SHORT', color: '#4da8ff', gamma: -1, x: 670 }
+    ];
+
+    scenarios.forEach(s => {
+      // Source
+      ctx.strokeStyle = '#7b9dff';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(s.x - 40, 40, 30, 40);
+      ctx.fillStyle = '#7b9dff';
+      ctx.font = '10px Share Tech Mono';
+      ctx.fillText('Src', s.x - 35, 65);
+
+      // Line
+      ctx.strokeStyle = s.color;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(s.x - 10, 60);
+      ctx.lineTo(s.x + 40, 60);
+      ctx.stroke();
+
+      // Traveling pulse
+      const px = s.x - 10 + ((globalTime * 40) % 50);
+      ctx.fillStyle = s.color;
+      ctx.beginPath();
+      ctx.arc(px, 60, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Load
+      ctx.strokeStyle = s.color;
+      ctx.strokeRect(s.x + 40, 40, 30, 40);
+      ctx.fillStyle = s.color;
+      ctx.font = '10px Share Tech Mono';
+      ctx.fillText('Load', s.x + 44, 65);
+
+      // Title
+      ctx.font = 'bold 13px Orbitron';
+      ctx.fillText(s.label, s.x - 20, 25);
+
+      // Waveform
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      const baseY = 180;
+      for (let i = 0; i < 120; i++) {
+        const t = i / 120;
+        let y = baseY;
+        if (t > 0.2) {
+          const base = -40;
+          if (s.gamma === 0) y = baseY + base;
+          else if (s.gamma === 1) y = baseY + base + Math.sin(t * 25) * 30 * Math.exp(-(t - 0.2) * 4);
+          else y = baseY - base + Math.sin(t * 25) * 30 * Math.exp(-(t - 0.2) * 4);
+        }
+        const sx = s.x - 60 + i * 1.2;
+        i === 0 ? ctx.moveTo(sx, y) : ctx.lineTo(sx, y);
+      }
+      ctx.stroke();
+
+      // Gamma value
+      ctx.font = '12px Share Tech Mono';
+      ctx.fillText(`Γ = ${s.gamma}`, s.x - 15, 260);
+    });
+
+    // Animated matching animation
+    const matchY = 300;
+    ctx.strokeStyle = '#00ff88';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(80, matchY);
+    ctx.lineTo(720, matchY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    const mx = 400 + Math.sin(globalTime) * 200;
+    ctx.fillStyle = '#00ff88';
+    ctx.beginPath();
+    ctx.arc(mx, matchY, 6, 0, Math.PI * 2);
+    ctx.fill();
+
+    const mGrad = ctx.createRadialGradient(mx, matchY, 0, mx, matchY, 20);
+    mGrad.addColorStop(0, 'rgba(0, 255, 136, 0.4)');
+    mGrad.addColorStop(1, 'rgba(0, 255, 136, 0)');
+    ctx.fillStyle = mGrad;
+    ctx.beginPath();
+    ctx.arc(mx, matchY, 20, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#b0b0dd';
+    ctx.font = '10px Share Tech Mono';
+    ctx.fillText('Z₀', 80, matchY - 10);
+    ctx.fillText('Z_L → match for Γ=0', 550, matchY - 10);
+
+    // Fun faces on each scenario
+    drawFace(ctx, 130, 270, 10, 'happy', globalTime);
+    drawBubble(ctx, 130, 250, 'Perfect fit!', '#00ff88', globalTime);
+    drawFace(ctx, 400, 270, 10, 'angry', globalTime);
+    drawBubble(ctx, 400, 250, 'Bounce! Bounce!', '#ff4444', globalTime);
+    drawFace(ctx, 670, 270, 10, 'shocked', globalTime);
+    drawBubble(ctx, 670, 250, 'Short circuit!', '#4da8ff', globalTime);
+
+    // Shoe analogy text
+    ctx.fillStyle = '#b0b0dd80';
+    ctx.font = '9px Rajdhani';
+    ctx.fillText('42 ka shoe, 42 ka foot = Perfect!', 60, 340);
+    ctx.fillText('Loose shoe = gir padega!', 340, 340);
+    ctx.fillText('Tight shoe = dard hoga!', 600, 340);
+
+    // CIRCUIT: Impedance matching circuit
+    ctx.save();
+    ctx.strokeStyle = '#7b9dff60';
+    ctx.lineWidth = 1;
+    const iy = 318;
+    // Source Z0
+    drawVSource(ctx, 80, iy, 7, '');
+    drawWire(ctx, 80, iy - 7, 80, iy - 18);
+    drawResistor(ctx, 80, iy - 18, 120, iy - 18);
+    drawLabel(ctx, 100, iy - 25, 'Z₀=50Ω', '#00ff8880');
+    // Matching section
+    drawWire(ctx, 120, iy - 18, 145, iy - 18);
+    ctx.setLineDash([3, 2]);
+    drawWire(ctx, 145, iy - 18, 200, iy - 18);
+    ctx.setLineDash([]);
+    drawLabel(ctx, 170, iy - 25, 'λ/4', '#ffcc0080');
+    // Load ZL
+    drawResistor(ctx, 200, iy - 18, 250, iy - 18);
+    drawLabel(ctx, 225, iy - 25, 'ZL=50Ω', '#00ff8880');
+    drawWire(ctx, 250, iy - 18, 250, iy);
+    drawGround(ctx, 250, iy, 5);
+    drawWire(ctx, 80, iy + 7, 80, iy);
+    drawWire(ctx, 80, iy, 250, iy);
+    ctx.restore();
+
+    animFrames['imp'] = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ============ SLIDE 5: Crosstalk ============
+function animCrosstalk() {
+  const ctx = getCtx('canvas-crosstalk');
+  if (!ctx) return;
+  const W = 800, H = 350;
+
+  function draw() {
+    globalTime += 0.025;
+    ctx.fillStyle = 'rgba(5,5,30,0.95)';
+    ctx.fillRect(0, 0, W, H);
+
+    // Aggressor trace
+    ctx.strokeStyle = '#00f0ff';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(50, 80);
+    ctx.lineTo(750, 80);
+    ctx.stroke();
+    ctx.fillStyle = '#00f0ff';
+    ctx.font = 'bold 12px Orbitron';
+    ctx.fillText('AGGRESSOR', 330, 70);
+
+    // Victim trace
+    ctx.strokeStyle = '#ff2d7b';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(50, 260);
+    ctx.lineTo(750, 260);
+    ctx.stroke();
+    ctx.fillStyle = '#ff2d7b';
+    ctx.fillText('VICTIM', 340, 290);
+
+    // Coupling field lines (animated)
+    const numLines = 20;
+    for (let i = 0; i < numLines; i++) {
+      const x = 80 + (i / numLines) * 640;
+      const phase = Math.sin(globalTime * 4 - i * 0.3);
+      const intensity = Math.abs(phase);
+
+      ctx.strokeStyle = `rgba(123, 45, 255, ${intensity * 0.5})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(x, 85);
+      const cp1x = x + phase * 15;
+      const cp1y = 140;
+      const cp2x = x - phase * 15;
+      const cp2y = 200;
+      ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, 255);
+      ctx.stroke();
+    }
+
+    // Aggressor signal
+    ctx.strokeStyle = '#00f0ff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let x = 50; x < 750; x++) {
+      const y = 80 + Math.sin((x - 50) * 0.02 - globalTime * 5) * 20;
+      x === 50 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Induced signal on victim (attenuated)
+    ctx.strokeStyle = '#ff2d7b';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    for (let x = 50; x < 750; x++) {
+      const y = 260 + Math.sin((x - 50) * 0.02 - globalTime * 5) * 10 * Math.sin(globalTime * 2);
+      x === 50 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // NEXT / FEXT labels
+    ctx.fillStyle = '#ffcc00';
+    ctx.font = 'bold 12px Share Tech Mono';
+    ctx.fillText('NEXT ↗', 60, 180);
+    ctx.fillStyle = '#4dff88';
+    ctx.fillText('FEXT ↘', 680, 180);
+
+    // Coupling label
+    ctx.fillStyle = '#7b2dff';
+    ctx.font = '13px Share Tech Mono';
+    ctx.fillText('Coupling Field', 350, 175);
+
+    // Fun faces - Aggressor and Victim
+    drawFace(ctx, 60, 55, 10, 'cool', globalTime);
+    drawBubble(ctx, 60, 30, 'Cheating on!', '#00f0ff', globalTime);
+    drawFace(ctx, 60, 300, 10, 'sad', globalTime);
+    drawBubble(ctx, 60, 275, 'Mera paper kharab!', '#ff2d7b', globalTime);
+
+    // Animated coupling indicator
+    const cPulse = Math.sin(globalTime * 6) * 0.5 + 0.5;
+    const cGrad = ctx.createRadialGradient(400, 170, 0, 400, 170, 30);
+    cGrad.addColorStop(0, `rgba(123, 45, 255, ${cPulse * 0.4})`);
+    cGrad.addColorStop(1, 'rgba(123, 45, 255, 0)');
+    ctx.fillStyle = cGrad;
+    ctx.beginPath();
+    ctx.arc(400, 170, 30, 0, Math.PI * 2);
+    ctx.fill();
+
+    // CIRCUIT: Coupled transmission lines with mutual Cm and Lm
+    ctx.save();
+    ctx.strokeStyle = '#7b9dff60';
+    ctx.lineWidth = 1;
+    const cty = 320;
+    // Line 1 (aggressor)
+    drawVSource(ctx, 100, cty, 7, '');
+    drawWire(ctx, 100, cty - 7, 100, cty - 20);
+    drawResistor(ctx, 100, cty - 20, 150, cty - 20);
+    drawLabel(ctx, 125, cty - 28, 'Z₀₁', '#00f0ff80');
+    ctx.setLineDash([3, 2]);
+    drawWire(ctx, 150, cty - 20, 300, cty - 20);
+    ctx.setLineDash([]);
+    drawResistor(ctx, 300, cty - 20, 350, cty - 20);
+    drawLabel(ctx, 325, cty - 28, 'RL₁', '#00f0ff80');
+    drawWire(ctx, 350, cty - 20, 350, cty);
+    drawGround(ctx, 350, cty, 5);
+    drawWire(ctx, 100, cty + 7, 100, cty);
+    drawWire(ctx, 100, cty, 350, cty);
+
+    // Line 2 (victim)
+    drawVSource(ctx, 450, cty, 7, '');
+    drawWire(ctx, 450, cty - 7, 450, cty - 20);
+    drawResistor(ctx, 450, cty - 20, 500, cty - 20);
+    drawLabel(ctx, 475, cty - 28, 'Z₀₂', '#ff2d7b80');
+    ctx.setLineDash([3, 2]);
+    drawWire(ctx, 500, cty - 20, 650, cty - 20);
+    ctx.setLineDash([]);
+    drawResistor(ctx, 650, cty - 20, 700, cty - 20);
+    drawLabel(ctx, 675, cty - 28, 'RL₂', '#ff2d7b80');
+    drawWire(ctx, 700, cty - 20, 700, cty);
+    drawGround(ctx, 700, cty, 5);
+    drawWire(ctx, 450, cty + 7, 450, cty);
+    drawWire(ctx, 450, cty, 700, cty);
+
+    // Mutual coupling (Cm and Lm between lines)
+    ctx.strokeStyle = '#7b2dff60';
+    drawCapacitor(ctx, 225, cty - 20, 575, cty - 20);
+    drawLabel(ctx, 400, cty - 28, 'Cm', '#7b2dff80');
+    // Mutual inductance arrows
+    ctx.setLineDash([2, 2]);
+    ctx.beginPath();
+    ctx.moveTo(200, cty - 14); ctx.lineTo(200, cty - 8);
+    ctx.moveTo(550, cty - 14); ctx.lineTo(550, cty - 8);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    drawLabel(ctx, 400, cty - 5, 'Lm', '#7b2dff80');
+    ctx.restore();
+
+    animFrames['xt'] = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ============ SLIDE 6: Eye Diagram ============
+function animEye() {
+  const ctx = getCtx('canvas-eye');
+  if (!ctx) return;
+  const W = 800, H = 350;
+
+  // Pre-generate random bit sequences and their waveforms
+  const traces = [];
+  for (let t = 0; t < 30; t++) {
+    const bits = [];
+    for (let i = 0; i < 4; i++) bits.push(Math.random() > 0.5 ? 1 : 0);
+    traces.push(bits);
+  }
+
+  function draw() {
+    globalTime += 0.01;
+    ctx.fillStyle = 'rgba(5,5,30,0.95)';
+    ctx.fillRect(0, 0, W, H);
+
+    const cx = W / 2, cy = H / 2;
+    const width = 500, height = 240;
+    const x0 = cx - width / 2, y0 = cy - height / 2;
+
+    // Grid
+    ctx.strokeStyle = 'rgba(0, 240, 255, 0.1)';
+    ctx.lineWidth = 0.5;
+    for (let i = 0; i <= 4; i++) {
+      const x = x0 + (i / 4) * width;
+      ctx.beginPath(); ctx.moveTo(x, y0); ctx.lineTo(x, y0 + height); ctx.stroke();
+    }
+    for (let i = 0; i <= 4; i++) {
+      const y = y0 + (i / 4) * height;
+      ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x0 + width, y); ctx.stroke();
+    }
+
+    // Eye diagram traces
+    const noise = 3 + Math.sin(globalTime) * 2;
+    traces.forEach((bits, ti) => {
+      ctx.strokeStyle = `rgba(0, 255, 136, ${0.15 + Math.random() * 0.1})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+
+      for (let x = 0; x < width; x++) {
+        const t = x / width;
+        let bitIndex = Math.floor(t * 2);
+        let bitT = (t * 2) - bitIndex;
+        if (bitIndex >= 2) bitIndex = 1, bitT = t * 2 - 1;
+
+        const currentBit = bits[bitIndex] || 0;
+        const nextBit = bits[bitIndex + 1] || bits[0];
+
+        // Transition
+        let level;
+        if (bitT < 0.15) {
+          const prev = bitIndex > 0 ? bits[bitIndex - 1] : 0;
+          level = prev + (currentBit - prev) * (bitT / 0.15);
+        } else if (bitT > 0.85) {
+          level = currentBit + (nextBit - currentBit) * ((bitT - 0.85) / 0.15);
+        } else {
+          level = currentBit;
+        }
+
+        const jitter = Math.sin(ti + t * 10) * noise * 0.5;
+        const amplitudeNoise = (Math.random() - 0.5) * noise;
+
+        const y = cy - (level - 0.5) * (height * 0.7) + jitter + amplitudeNoise;
+        x === 0 ? ctx.moveTo(x0 + x, y) : ctx.lineTo(x0 + x, y);
+      }
+      ctx.stroke();
+    });
+
+    // Eye opening indicator
+    ctx.strokeStyle = 'rgba(255, 200, 0, 0.4)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath();
+    ctx.moveTo(cx, y0 + 30);
+    ctx.lineTo(cx, cy);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx, y0 + height - 30);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = '#ffcc00';
+    ctx.font = '11px Share Tech Mono';
+    ctx.fillText('Eye Opening', cx - 35, y0 + height + 15);
+
+    // Labels
+    ctx.fillStyle = '#00ff88';
+    ctx.font = '12px Share Tech Mono';
+    ctx.fillText('1', x0 - 20, y0 + 30);
+    ctx.fillText('0', x0 - 20, y0 + height - 25);
+    ctx.fillText('UI', cx - 8, y0 - 10);
+
+    // Mask
+    ctx.strokeStyle = 'rgba(255, 45, 123, 0.3)';
+    ctx.fillStyle = 'rgba(255, 45, 123, 0.05)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(cx - 60, cy);
+    ctx.lineTo(cx - 30, y0 + 40);
+    ctx.lineTo(cx + 30, y0 + 40);
+    ctx.lineTo(cx + 60, cy);
+    ctx.lineTo(cx + 30, y0 + height - 40);
+    ctx.lineTo(cx - 30, y0 + height - 40);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = '#ff2d7b';
+    ctx.font = '10px Share Tech Mono';
+    ctx.fillText('Mask', cx - 15, cy + 5);
+
+    // Fun faces
+    drawFace(ctx, x0 - 25, cy, 14, 'happy', globalTime);
+    drawBubble(ctx, x0 - 25, cy - 22, 'Aankh khuli!', '#00ff88', globalTime);
+    drawFace(ctx, x0 + width + 25, cy, 14, 'cool', globalTime);
+    drawBubble(ctx, x0 + width + 25, cy - 22, 'Healthy!', '#00f0ff', globalTime);
+
+    // Doctor text
+    ctx.fillStyle = '#ffcc0080';
+    ctx.font = '10px Rajdhani';
+    ctx.fillText('Doctor: "Signal ki health theek hai!"', cx - 90, y0 + height + 35);
+
+    // CIRCUIT: TX → Channel → RX → Sampling (Eye diagram generator)
+    ctx.save();
+    ctx.strokeStyle = '#7b9dff50';
+    ctx.lineWidth = 1;
+    const ey = y0 + height + 48;
+
+    // TX (transmitter)
+    ctx.strokeRect(55, ey - 28, 40, 22);
+    drawLabel(ctx, 75, ey - 15, 'TX', '#00f0ff50');
+    drawWire(ctx, 95, ey - 17, 115, ey - 17);
+
+    // Series resistor (output impedance)
+    drawResistor(ctx, 115, ey - 17, 150, ey - 17);
+    drawLabel(ctx, 132, ey - 25, 'Z₀', '#ffcc0050');
+    drawWire(ctx, 150, ey - 17, 165, ey - 17);
+
+    // Channel (transmission line with parasitics)
+    ctx.setLineDash([3, 2]);
+    drawWire(ctx, 165, ey - 17, 310, ey - 17);
+    ctx.setLineDash([]);
+    // Channel capacitance to ground
+    drawNode(ctx, 210, ey - 17, 2);
+    drawCapacitor(ctx, 210, ey - 17, 210, ey - 36);
+    drawLabel(ctx, 220, ey - 30, 'Cc', '#ff2d7b40');
+    drawWire(ctx, 210, ey - 36, 210, ey - 42);
+    drawGround(ctx, 210, ey - 42, 4);
+    // Channel inductance
+    drawNode(ctx, 260, ey - 17, 2);
+    drawInductor(ctx, 260, ey - 17, 310, ey - 17);
+    drawLabel(ctx, 285, ey - 25, 'Lch', '#7b2dff40');
+
+    // RX (receiver with termination)
+    drawWire(ctx, 310, ey - 17, 330, ey - 17);
+    drawNode(ctx, 330, ey - 17, 2);
+    // Termination resistor
+    drawResistor(ctx, 330, ey - 17, 330, ey - 40);
+    drawLabel(ctx, 340, ey - 32, 'Rt=50Ω', '#4dff8840');
+    drawWire(ctx, 330, ey - 40, 330, ey - 46);
+    drawLabel(ctx, 325, ey - 50, 'Vref', '#4dff8840');
+    // Sampling switch
+    drawWire(ctx, 330, ey - 17, 370, ey - 17);
+    ctx.strokeRect(370, ey - 28, 50, 22);
+    drawLabel(ctx, 395, ey - 15, 'Sample', '#00f0ff50');
+    // Clock input to sampler
+    drawWire(ctx, 395, ey - 28, 395, ey - 38);
+    drawLabel(ctx, 395, ey - 42, 'CLK', '#ffcc0050');
+    ctx.setLineDash([2, 2]);
+    ctx.beginPath();
+    // small clock waveform
+    ctx.moveTo(380, ey - 42); ctx.lineTo(385, ey - 42); ctx.lineTo(385, ey - 46);
+    ctx.lineTo(390, ey - 46); ctx.lineTo(390, ey - 42); ctx.lineTo(400, ey - 42);
+    ctx.lineTo(400, ey - 46); ctx.lineTo(405, ey - 46); ctx.lineTo(405, ey - 42);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Eye output
+    drawWire(ctx, 420, ey - 17, 445, ey - 17);
+    drawLabel(ctx, 475, ey - 20, '→ Eye Diagram', '#00ff8850');
+    // Eye shape icon
+    ctx.strokeStyle = '#00ff8840';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(455, ey - 8);
+    ctx.quadraticCurveTo(465, ey - 22, 475, ey - 8);
+    ctx.quadraticCurveTo(485, ey - 22, 495, ey - 8);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(455, ey - 26);
+    ctx.quadraticCurveTo(465, ey - 12, 475, ey - 26);
+    ctx.quadraticCurveTo(485, ey - 12, 495, ey - 26);
+    ctx.stroke();
+
+    // Ground return
+    drawWire(ctx, 55, ey - 6, 55, ey);
+    drawWire(ctx, 55, ey, 420, ey);
+    drawWire(ctx, 420, ey - 6, 420, ey);
+    drawGround(ctx, 240, ey, 6);
+    ctx.restore();
+
+    animFrames['eye'] = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ============ SLIDE 7: Termination ============
+function animTermination() {
+  const ctx = getCtx('canvas-term');
+  if (!ctx) return;
+  const W = 800, H = 300;
+
+  function draw() {
+    globalTime += 0.02;
+    ctx.fillStyle = 'rgba(5,5,30,0.95)';
+    ctx.fillRect(0, 0, W, H);
+
+    const configs = [
+      { name: 'SERIES', color: '#00f0ff', y: 65 },
+      { name: 'PARALLEL', color: '#7b2dff', y: 155 },
+      { name: 'THEVENIN', color: '#ff2d7b', y: 245 }
+    ];
+
+    configs.forEach((cfg, idx) => {
+      const baseY = cfg.y;
+      ctx.fillStyle = cfg.color;
+      ctx.font = 'bold 12px Orbitron';
+      ctx.fillText(cfg.name, 15, baseY - 25);
+
+      // Source
+      ctx.strokeStyle = cfg.color;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(30, baseY);
+      ctx.lineTo(80, baseY);
+      ctx.stroke();
+
+      if (idx === 0) {
+        // Series: resistor at source
+        ctx.strokeStyle = cfg.color;
+        drawResistor(ctx, 80, baseY, 140, baseY);
+        ctx.fillStyle = cfg.color;
+        ctx.font = '9px Share Tech Mono';
+        ctx.fillText('Rs', 105, baseY - 12);
+
+        // Line
+        ctx.strokeStyle = cfg.color;
+        ctx.beginPath();
+        ctx.moveTo(140, baseY);
+        ctx.lineTo(350, baseY);
+        ctx.stroke();
+
+        // Load (open)
+        ctx.strokeRect(350, baseY - 15, 30, 30);
+        ctx.fillText('RL', 355, baseY - 20);
+      } else if (idx === 1) {
+        // Parallel: line + resistor to ground at receiver
+        ctx.strokeStyle = cfg.color;
+        ctx.beginPath();
+        ctx.moveTo(80, baseY);
+        ctx.lineTo(350, baseY);
+        ctx.stroke();
+
+        ctx.strokeRect(350, baseY - 15, 30, 30);
+        drawResistor(ctx, 380, baseY, 420, baseY + 30);
+        ctx.beginPath();
+        ctx.moveTo(420, baseY + 30);
+        ctx.lineTo(420, baseY + 35);
+        ctx.stroke();
+        // Ground symbol
+        ctx.beginPath();
+        ctx.moveTo(410, baseY + 35);
+        ctx.lineTo(430, baseY + 35);
+        ctx.moveTo(414, baseY + 38);
+        ctx.lineTo(426, baseY + 38);
+        ctx.moveTo(418, baseY + 41);
+        ctx.lineTo(422, baseY + 41);
+        ctx.stroke();
+        ctx.fillText('Rp', 395, baseY + 10);
+      } else {
+        // Thevenin: split resistors
+        ctx.strokeStyle = cfg.color;
+        ctx.beginPath();
+        ctx.moveTo(80, baseY);
+        ctx.lineTo(350, baseY);
+        ctx.stroke();
+
+        ctx.strokeRect(350, baseY - 15, 30, 30);
+        // R1 to VCC
+        drawResistor(ctx, 380, baseY - 5, 420, baseY - 30);
+        ctx.fillText('R1', 395, baseY - 35);
+        ctx.fillText('VCC', 410, baseY - 42);
+        // R2 to GND
+        drawResistor(ctx, 380, baseY + 5, 420, baseY + 30);
+        ctx.beginPath();
+        ctx.moveTo(420, baseY + 30);
+        ctx.lineTo(420, baseY + 35);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(410, baseY + 35);
+        ctx.lineTo(430, baseY + 35);
+        ctx.moveTo(414, baseY + 38);
+        ctx.lineTo(426, baseY + 38);
+        ctx.stroke();
+        ctx.fillText('R2', 395, baseY + 25);
+      }
+
+      // Signal waveform result
+      ctx.strokeStyle = cfg.color;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      for (let x = 0; x < 150; x++) {
+        const t = x / 150;
+        let y = baseY;
+        if (t > 0.15) {
+          const ringing = idx === 0 ? 0 : Math.sin(t * 20) * 8 * Math.exp(-t * 6);
+          y = baseY - 15 + ringing;
+        }
+        const sx = 500 + x * 1.8;
+        x === 0 ? ctx.moveTo(sx, y) : ctx.lineTo(sx, y);
+      }
+      ctx.stroke();
+    });
+
+    // Arrow labels
+    ctx.fillStyle = '#b0b0dd';
+    ctx.font = '10px Share Tech Mono';
+    ctx.fillText('Signal at Load →', 580, 45);
+
+    // Fun face for series (best result)
+    drawFace(ctx, 580, configs[0].y, 8, 'happy', globalTime);
+    drawBubble(ctx, 620, configs[0].y - 12, 'Full Stop!', '#00f0ff', globalTime);
+
+    // Fun face for the worst
+    drawFace(ctx, 580, configs[2].y, 8, 'angry', globalTime);
+    drawBubble(ctx, 620, configs[2].y - 12, 'Abhi bhi ring!', '#ff2d7b', globalTime);
+
+    // CIRCUIT: Proper termination circuits
+    ctx.save();
+    ctx.strokeStyle = '#7b9dff50';
+    ctx.lineWidth = 1;
+    const ty = 280;
+
+    // Series termination circuit
+    drawVSource(ctx, 60, ty, 6, '');
+    drawWire(ctx, 60, ty - 6, 60, ty - 16);
+    drawResistor(ctx, 60, ty - 16, 100, ty - 16);
+    drawLabel(ctx, 75, ty - 24, 'Rs=33Ω', '#00f0ff60');
+    drawWire(ctx, 100, ty - 16, 120, ty - 16);
+    ctx.setLineDash([3, 2]);
+    drawWire(ctx, 120, ty - 16, 200, ty - 16);
+    ctx.setLineDash([]);
+    drawLabel(ctx, 155, ty - 24, 'Z₀', '#00f0ff60');
+    // Open at end (no parallel R)
+    drawWire(ctx, 200, ty - 16, 220, ty - 16);
+    drawNode(ctx, 220, ty - 16, 2);
+    drawWire(ctx, 220, ty - 16, 220, ty);
+    drawGround(ctx, 220, ty, 5);
+    drawWire(ctx, 60, ty + 6, 60, ty);
+    drawWire(ctx, 60, ty, 220, ty);
+    drawLabel(ctx, 140, ty + 10, 'Series', '#00f0ff60');
+
+    // Parallel termination circuit
+    drawVSource(ctx, 310, ty, 6, '');
+    drawWire(ctx, 310, ty - 6, 310, ty - 16);
+    ctx.setLineDash([3, 2]);
+    drawWire(ctx, 310, ty - 16, 420, ty - 16);
+    ctx.setLineDash([]);
+    drawLabel(ctx, 365, ty - 24, 'Z₀', '#7b2dff60');
+    drawWire(ctx, 420, ty - 16, 440, ty - 16);
+    drawNode(ctx, 440, ty - 16, 2);
+    drawResistor(ctx, 440, ty - 16, 440, ty - 50);
+    drawLabel(ctx, 450, ty - 40, 'Rp=50Ω', '#7b2dff60');
+    drawWire(ctx, 440, ty - 50, 440, ty - 56);
+    drawLabel(ctx, 445, ty - 60, 'VCC', '#7b2dff60');
+    drawWire(ctx, 440, ty - 16, 440, ty);
+    drawGround(ctx, 440, ty, 5);
+    drawWire(ctx, 310, ty + 6, 310, ty);
+    drawWire(ctx, 310, ty, 440, ty);
+    drawLabel(ctx, 375, ty + 10, 'Parallel', '#7b2dff60');
+
+    // AC termination circuit
+    drawVSource(ctx, 530, ty, 6, '');
+    drawWire(ctx, 530, ty - 6, 530, ty - 16);
+    ctx.setLineDash([3, 2]);
+    drawWire(ctx, 530, ty - 16, 630, ty - 16);
+    ctx.setLineDash([]);
+    drawLabel(ctx, 580, ty - 24, 'Z₀', '#ffcc0060');
+    drawWire(ctx, 630, ty - 16, 650, ty - 16);
+    drawNode(ctx, 650, ty - 16, 2);
+    drawCapacitor(ctx, 650, ty - 16, 650, ty - 40);
+    drawLabel(ctx, 660, ty - 32, 'C', '#ffcc0060');
+    drawWire(ctx, 650, ty - 40, 650, ty - 46);
+    drawResistor(ctx, 650, ty - 46, 650, ty - 66);
+    drawLabel(ctx, 660, ty - 58, 'R=50Ω', '#ffcc0060');
+    drawWire(ctx, 650, ty - 66, 650, ty - 72);
+    drawWire(ctx, 650, ty - 16, 650, ty);
+    drawGround(ctx, 650, ty, 5);
+    drawWire(ctx, 530, ty + 6, 530, ty);
+    drawWire(ctx, 530, ty, 650, ty);
+    drawLabel(ctx, 590, ty + 10, 'AC Term', '#ffcc0060');
+    ctx.restore();
+
+    animFrames['term'] = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ============ SLIDE 8: EMI ============
+function animEMI() {
+  const ctx = getCtx('canvas-emi');
+  if (!ctx) return;
+  const W = 800, H = 350;
+
+  function draw() {
+    globalTime += 0.03;
+    ctx.fillStyle = 'rgba(5,5,30,0.95)';
+    ctx.fillRect(0, 0, W, H);
+
+    // PCB trace
+    ctx.strokeStyle = '#00f0ff';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(100, 175);
+    ctx.lineTo(700, 175);
+    ctx.stroke();
+
+    // Signal on trace
+    const pulseX = 100 + ((globalTime * 80) % 600);
+    ctx.strokeStyle = '#00ff88';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let x = 100; x < 700; x++) {
+      const dist = Math.abs(x - pulseX);
+      const y = 175 + Math.exp(-dist * dist / 2000) * 20;
+      x === 100 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // EMI radiation waves
+    for (let i = 0; i < 5; i++) {
+      const radius = 20 + i * 25 + Math.sin(globalTime * 3) * 5;
+      const alpha = Math.max(0, 0.3 - i * 0.06);
+      ctx.strokeStyle = `rgba(255, 45, 123, ${alpha})`;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(pulseX, 175, radius, -Math.PI * 0.8, -Math.PI * 0.2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(pulseX, 175, radius, Math.PI * 0.2, Math.PI * 0.8);
+      ctx.stroke();
+    }
+
+    // Labels
+    ctx.fillStyle = '#ff2d7b';
+    ctx.font = 'bold 13px Orbitron';
+    ctx.fillText('EMI RADIATION', pulseX - 55, 70);
+    ctx.fillStyle = '#b0b0dd';
+    ctx.font = '11px Share Tech Mono';
+    ctx.fillText('High di/dt → Radiated Emissions', 250, 320);
+
+    // Fun faces
+    drawFace(ctx, 50, 55, 12, 'angry', globalTime);
+    drawBubble(ctx, 90, 35, 'DJ bajao 3 baje!', '#ff2d7b', globalTime);
+    drawFace(ctx, 750, 55, 12, 'sad', globalTime);
+    drawBubble(ctx, 710, 35, 'Police bula lungi!', '#4da8ff', globalTime);
+
+    // Frequency spectrum bar
+    ctx.fillStyle = 'rgba(0, 240, 255, 0.1)';
+    ctx.fillRect(50, 280, 700, 25);
+    for (let x = 0; x < 700; x++) {
+      const freq = x / 700;
+      const amp = Math.sin(freq * 30 - globalTime * 4) * 0.5 + 0.5;
+      ctx.fillStyle = `rgba(123, 45, 255, ${amp * 0.3})`;
+      ctx.fillRect(50 + x, 280, 1, 25 * amp);
+    }
+    ctx.fillStyle = '#7b9dff';
+    ctx.font = '9px Share Tech Mono';
+    ctx.fillText('Frequency Spectrum →', 300, 315);
+
+    // Current loop indicator
+    ctx.strokeStyle = '#ffcc00';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath();
+    ctx.ellipse(pulseX, 175, 40, 60 + Math.sin(globalTime * 2) * 10, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#ffcc00';
+    ctx.font = '10px Share Tech Mono';
+    ctx.fillText('Current Loop', pulseX + 45, 220);
+
+    // CIRCUIT: EMI filtering with ferrite bead + decoupling
+    ctx.save();
+    ctx.strokeStyle = '#7b9dff50';
+    ctx.lineWidth = 1;
+    const ey = 335;
+    // Noise source (IC switching)
+    drawVSource(ctx, 80, ey, 6, '');
+    drawLabel(ctx, 80, ey - 16, 'IC (noise)', '#ff2d7b60');
+    drawWire(ctx, 80, ey - 6, 80, ey - 22);
+    // Ferrite bead (drawn as inductor with label)
+    drawInductor(ctx, 80, ey - 22, 140, ey - 22);
+    drawLabel(ctx, 110, ey - 30, 'FB (ferrite)', '#ffcc0060');
+    drawWire(ctx, 140, ey - 22, 170, ey - 22);
+    // Decoupling cap to ground
+    drawNode(ctx, 170, ey - 22, 2);
+    drawCapacitor(ctx, 170, ey - 22, 170, ey - 44);
+    drawLabel(ctx, 180, ey - 36, '100nF', '#00ff8860');
+    drawWire(ctx, 170, ey - 44, 170, ey - 50);
+    drawWire(ctx, 170, ey - 22, 170, ey);
+    drawGround(ctx, 170, ey, 5);
+    // Clean output
+    drawWire(ctx, 170, ey - 22, 230, ey - 22);
+    drawResistor(ctx, 230, ey - 22, 280, ey - 22);
+    drawLabel(ctx, 255, ey - 30, 'RL', '#4da8ff60');
+    drawWire(ctx, 280, ey - 22, 280, ey);
+    drawGround(ctx, 280, ey, 5);
+    drawWire(ctx, 80, ey + 6, 80, ey);
+    drawWire(ctx, 80, ey, 280, ey);
+    // Second cap (bulk)
+    drawNode(ctx, 230, ey - 22, 2);
+    drawCapacitor(ctx, 230, ey - 22, 230, ey - 44);
+    drawLabel(ctx, 240, ey - 36, '10µF', '#4dff8860');
+    drawWire(ctx, 230, ey - 44, 230, ey - 50);
+    // Shielding note
+    drawLabel(ctx, 430, ey - 16, 'Shield = Faraday cage for PCB', '#7b9dff40');
+    ctx.restore();
+
+    animFrames['emi'] = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ============ SLIDE 9: Power Integrity ============
+function animPI() {
+  const ctx = getCtx('canvas-pi');
+  if (!ctx) return;
+  const W = 800, H = 350;
+
+  function draw() {
+    globalTime += 0.02;
+    ctx.fillStyle = 'rgba(5,5,30,0.95)';
+    ctx.fillRect(0, 0, W, H);
+
+    // PDN impedance plot
+    const margin = { left: 80, right: 50, top: 40, bottom: 60 };
+    const pw = W - margin.left - margin.right;
+    const ph = H - margin.top - margin.bottom;
+
+    // Axes
+    ctx.strokeStyle = 'rgba(0, 240, 255, 0.4)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(margin.left, margin.top);
+    ctx.lineTo(margin.left, margin.top + ph);
+    ctx.lineTo(margin.left + pw, margin.top + ph);
+    ctx.stroke();
+
+    // Axis labels
+    ctx.fillStyle = '#7b9dff';
+    ctx.font = '10px Share Tech Mono';
+    ctx.fillText('|Z| (Ω)', 20, margin.top + 20);
+    ctx.fillText('Frequency (Hz)', margin.left + pw / 2 - 40, margin.top + ph + 45);
+
+    // Log scale ticks
+    const freqs = ['1k', '10k', '100k', '1M', '10M', '100M', '1G'];
+    freqs.forEach((f, i) => {
+      const x = margin.left + (i / (freqs.length - 1)) * pw;
+      ctx.fillStyle = 'rgba(123, 157, 255, 0.5)';
+      ctx.fillText(f, x - 10, margin.top + ph + 15);
+      ctx.strokeStyle = 'rgba(123, 157, 255, 0.1)';
+      ctx.beginPath();
+      ctx.moveTo(x, margin.top);
+      ctx.lineTo(x, margin.top + ph);
+      ctx.stroke();
+    });
+
+    // Target impedance line
+    const targetY = margin.top + ph * 0.6;
+    ctx.strokeStyle = 'rgba(255, 45, 123, 0.5)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([6, 4]);
+    ctx.beginPath();
+    ctx.moveTo(margin.left, targetY);
+    ctx.lineTo(margin.left + pw, targetY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#ff2d7b';
+    ctx.font = '10px Share Tech Mono';
+    ctx.fillText('Z_target', margin.left + pw + 5, targetY + 4);
+
+    // PDN impedance curve
+    ctx.strokeStyle = '#00ff88';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let i = 0; i < pw; i++) {
+      const t = i / pw;
+      // Simulate PDN impedance profile with resonances
+      const base = 0.3 + t * 0.2;
+      const res1 = Math.exp(-((t - 0.25) * (t - 0.25)) * 200) * 0.4;
+      const res2 = Math.exp(-((t - 0.55) * (t - 0.55)) * 300) * 0.3;
+      const res3 = Math.exp(-((t - 0.8) * (t - 0.8)) * 400) * 0.15;
+      const z = base - res1 - res2 - res3 + Math.sin(globalTime + t * 5) * 0.01;
+      const x = margin.left + i;
+      const y = margin.top + z * ph;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Decoupling capacitor labels
+    const caps = [
+      { label: 'Bulk Cap', pos: 0.15, color: '#ffcc00' },
+      { label: 'Ceramic 10µF', pos: 0.35, color: '#4da8ff' },
+      { label: 'Ceramic 100nF', pos: 0.55, color: '#00f0ff' },
+      { label: 'Ceramic 1nF', pos: 0.75, color: '#7b2dff' }
+    ];
+
+    caps.forEach(cap => {
+      const x = margin.left + cap.pos * pw;
+      ctx.strokeStyle = cap.color;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(x, margin.top + ph);
+      ctx.lineTo(x, margin.top + ph + 25);
+      ctx.stroke();
+      ctx.fillStyle = cap.color;
+      ctx.font = '9px Share Tech Mono';
+      ctx.fillText(cap.label, x - 30, margin.top + ph + 35);
+    });
+
+    // Title
+    ctx.fillStyle = '#00ff88';
+    ctx.font = 'bold 13px Orbitron';
+    ctx.fillText('PDN Impedance Profile', 280, 25);
+
+    // Fun faces
+    drawFace(ctx, 30, targetY, 10, 'happy', globalTime);
+    drawBubble(ctx, 70, targetY - 14, 'Safe zone!', '#00ff88', globalTime);
+    drawFace(ctx, margin.left + pw + 30, targetY - 30, 10, 'shocked', globalTime);
+    drawBubble(ctx, margin.left + pw + 30, targetY - 50, 'Light dim ho gayi!', '#ff2d7b', globalTime);
+
+    // CIRCUIT: PDN with decoupling caps
+    ctx.save();
+    ctx.strokeStyle = '#7b9dff40';
+    ctx.lineWidth = 1;
+    const py2 = margin.top + ph + 5;
+    // VRM (voltage regulator)
+    drawVSource(ctx, 100, py2, 7, 'VRM');
+    drawWire(ctx, 100, py2 - 7, 100, py2 - 22);
+    // Plane inductance
+    drawInductor(ctx, 100, py2 - 22, 160, py2 - 22);
+    drawLabel(ctx, 130, py2 - 30, 'Lplane', '#ffcc0060');
+    drawWire(ctx, 160, py2 - 22, 175, py2 - 22);
+    // Bulk cap
+    drawNode(ctx, 175, py2 - 22, 2);
+    drawCapacitor(ctx, 175, py2 - 22, 175, py2 - 44);
+    drawLabel(ctx, 185, py2 - 36, '47µF', '#ffcc0060');
+    drawWire(ctx, 175, py2 - 44, 175, py2 - 50);
+    drawWire(ctx, 175, py2 - 22, 175, py2);
+    drawGround(ctx, 175, py2, 5);
+    // More wire
+    drawWire(ctx, 175, py2 - 22, 220, py2 - 22);
+    // Ceramic caps (2 in parallel)
+    drawNode(ctx, 220, py2 - 22, 2);
+    drawCapacitor(ctx, 220, py2 - 22, 220, py2 - 44);
+    drawLabel(ctx, 230, py2 - 36, '10µF', '#00ff8860');
+    drawWire(ctx, 220, py2 - 44, 220, py2 - 50);
+    drawWire(ctx, 220, py2 - 22, 265, py2 - 22);
+    drawNode(ctx, 265, py2 - 22, 2);
+    drawCapacitor(ctx, 265, py2 - 22, 265, py2 - 44);
+    drawLabel(ctx, 275, py2 - 36, '100nF', '#4dff8860');
+    drawWire(ctx, 265, py2 - 44, 265, py2 - 50);
+    // IC load
+    drawWire(ctx, 265, py2 - 22, 320, py2 - 22);
+    drawResistor(ctx, 320, py2 - 22, 360, py2 - 22);
+    drawLabel(ctx, 340, py2 - 30, 'IC', '#ff2d7b60');
+    drawWire(ctx, 360, py2 - 22, 360, py2);
+    drawGround(ctx, 360, py2, 5);
+    // Ground return
+    drawWire(ctx, 100, py2 + 7, 100, py2);
+    drawWire(ctx, 100, py2, 360, py2);
+    drawLabel(ctx, 225, py2 + 10, 'PDN: VRM → Bulk → Ceramic → IC', '#7b9dff40');
+    ctx.restore();
+
+    animFrames['pi'] = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ============ SLIDE 10: Via Effects ============
+function animVia() {
+  const ctx = getCtx('canvas-via');
+  if (!ctx) return;
+  const W = 800, H = 280;
+
+  function draw() {
+    globalTime += 0.025;
+    ctx.fillStyle = 'rgba(5,5,30,0.95)';
+    ctx.fillRect(0, 0, W, H);
+
+    const viaX = 400;
+    const layers = [
+      { y: 40, label: 'Top Layer', color: '#00f0ff' },
+      { y: 90, label: 'L2 (GND)', color: '#4dff88' },
+      { y: 140, label: 'L3 (Signal)', color: '#ff2d7b' },
+      { y: 190, label: 'L4 (Power)', color: '#ffcc00' },
+      { y: 240, label: 'Bottom Layer', color: '#7b2dff' }
+    ];
+
+    // Draw PCB layers
+    layers.forEach(l => {
+      ctx.strokeStyle = l.color;
+      ctx.lineWidth = 1;
+      ctx.globalAlpha = 0.4;
+      ctx.beginPath();
+      ctx.moveTo(50, l.y);
+      ctx.lineTo(W - 50, l.y);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = l.color;
+      ctx.font = '10px Share Tech Mono';
+      ctx.fillText(l.label, 50, l.y - 5);
+    });
+
+    // Via barrel (the drilled hole)
+    ctx.strokeStyle = '#00f0ff';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(viaX, 30);
+    ctx.lineTo(viaX, 250);
+    ctx.stroke();
+
+    // Via pad rings on each layer
+    layers.forEach((l, i) => {
+      ctx.strokeStyle = '#00f0ff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(viaX, l.y, 12, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Antipad (clearance) on non-connected layers
+      if (i !== 0 && i !== 2) {
+        ctx.strokeStyle = 'rgba(255, 45, 123, 0.3)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        ctx.arc(viaX, l.y, 18, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+    });
+
+    // Trace on top layer coming in
+    ctx.strokeStyle = '#00f0ff';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(150, layers[0].y);
+    ctx.lineTo(viaX - 12, layers[0].y);
+    ctx.stroke();
+
+    // Trace on L3 going out
+    ctx.strokeStyle = '#ff2d7b';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(viaX + 12, layers[2].y);
+    ctx.lineTo(650, layers[2].y);
+    ctx.stroke();
+
+    // Signal traveling along top trace
+    const sigX1 = 150 + ((globalTime * 60) % (viaX - 12 - 150));
+    ctx.fillStyle = '#00f0ff';
+    const g1 = ctx.createRadialGradient(sigX1, layers[0].y, 0, sigX1, layers[0].y, 12);
+    g1.addColorStop(0, 'rgba(0, 240, 255, 0.7)');
+    g1.addColorStop(1, 'rgba(0, 240, 255, 0)');
+    ctx.fillStyle = g1;
+    ctx.beginPath();
+    ctx.arc(sigX1, layers[0].y, 12, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Signal traveling through via (downward pulse)
+    const viaPulseY = 30 + ((globalTime * 60) % 220);
+    const g2 = ctx.createRadialGradient(viaX, viaPulseY, 0, viaX, viaPulseY, 10);
+    g2.addColorStop(0, 'rgba(255, 200, 0, 0.7)');
+    g2.addColorStop(1, 'rgba(255, 200, 0, 0)');
+    ctx.fillStyle = g2;
+    ctx.beginPath();
+    ctx.arc(viaX, viaPulseY, 10, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Signal on L3 trace going out
+    const sigX2 = viaX + 12 + ((globalTime * 60) % (650 - viaX - 12));
+    const g3 = ctx.createRadialGradient(sigX2, layers[2].y, 0, sigX2, layers[2].y, 12);
+    g3.addColorStop(0, 'rgba(255, 45, 123, 0.7)');
+    g3.addColorStop(1, 'rgba(255, 45, 123, 0)');
+    ctx.fillStyle = g3;
+    ctx.beginPath();
+    ctx.arc(sigX2, layers[2].y, 12, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Stub (unused portion below L3) with resonance indicator
+    ctx.strokeStyle = 'rgba(255, 100, 100, 0.4)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(viaX, layers[2].y + 5);
+    ctx.lineTo(viaX, 250);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Stub resonance waves
+    for (let i = 0; i < 3; i++) {
+      const radius = 5 + i * 8 + Math.sin(globalTime * 5) * 3;
+      ctx.strokeStyle = `rgba(255, 100, 100, ${0.2 - i * 0.06})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(viaX, 220, radius, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    // Labels
+    ctx.fillStyle = '#ffcc00';
+    ctx.font = 'bold 10px Share Tech Mono';
+    ctx.fillText('VIA', viaX + 20, 35);
+
+    ctx.fillStyle = '#ff6666';
+    ctx.fillText('STUB', viaX + 20, 230);
+
+    ctx.fillStyle = '#ffcc00';
+    ctx.font = '10px Share Tech Mono';
+    ctx.fillText('Parasitic L & C', viaX + 22, 145);
+
+    // Capacitance field indicators
+    const capPulse = Math.sin(globalTime * 4) * 0.5 + 0.5;
+    ctx.strokeStyle = `rgba(0, 255, 136, ${capPulse * 0.3})`;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(viaX - 15, 130);
+    ctx.lineTo(viaX - 25, 130);
+    ctx.lineTo(viaX - 25, 160);
+    ctx.lineTo(viaX - 15, 160);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(viaX + 15, 130);
+    ctx.lineTo(viaX + 25, 130);
+    ctx.lineTo(viaX + 25, 160);
+    ctx.lineTo(viaX + 25, 160);
+    ctx.stroke();
+
+    // Return via (stitching)
+    ctx.strokeStyle = '#4dff88';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath();
+    ctx.moveTo(440, 30);
+    ctx.lineTo(440, 250);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#4dff88';
+    ctx.font = '9px Share Tech Mono';
+    ctx.fillText('Return Via', 450, 145);
+
+    // Fun faces
+    drawFace(ctx, 130, 50, 10, 'cool', globalTime);
+    drawBubble(ctx, 170, 30, 'Highway pe chalo!', '#00f0ff', globalTime);
+    drawFace(ctx, 650, layers[2].y - 20, 10, 'shocked', globalTime);
+    drawBubble(ctx, 650, layers[2].y - 40, 'DHACHKA!', '#ffcc00', globalTime);
+    drawFace(ctx, viaX, 258, 8, 'angry', globalTime);
+    drawBubble(ctx, viaX + 50, 258, 'Speed breaker!', '#ff6666', globalTime);
+
+    // CIRCUIT: Via equivalent π-model
+    ctx.save();
+    ctx.strokeStyle = '#7b9dff50';
+    ctx.lineWidth = 1;
+    const vy2 = 260;
+    // Input trace
+    drawWire(ctx, 550, vy2 - 22, 590, vy2 - 22);
+    drawLabel(ctx, 555, vy2 - 30, 'Signal in', '#00f0ff50');
+    drawNode(ctx, 590, vy2 - 22, 2);
+    // C_pad1 (top)
+    drawCapacitor(ctx, 590, vy2 - 22, 590, vy2 - 44);
+    drawLabel(ctx, 598, vy2 - 36, 'Cpad', '#ff2d7b50');
+    drawWire(ctx, 590, vy2 - 44, 590, vy2 - 50);
+    // L_barrel
+    drawInductor(ctx, 590, vy2 - 22, 650, vy2 - 22);
+    drawLabel(ctx, 615, vy2 - 30, 'Lvia', '#ffcc0050');
+    // C_pad2 (bottom)
+    drawNode(ctx, 650, vy2 - 22, 2);
+    drawCapacitor(ctx, 650, vy2 - 22, 650, vy2 - 44);
+    drawLabel(ctx, 658, vy2 - 36, 'Cpad', '#ff2d7b50');
+    drawWire(ctx, 650, vy2 - 44, 650, vy2 - 50);
+    // Output trace
+    drawWire(ctx, 650, vy2 - 22, 700, vy2 - 22);
+    drawLabel(ctx, 680, vy2 - 30, 'Signal out', '#ff2d7b50');
+    // Grounds
+    drawWire(ctx, 590, vy2 - 50, 590, vy2 - 55);
+    drawGround(ctx, 590, vy2 - 55, 5);
+    drawWire(ctx, 650, vy2 - 50, 650, vy2 - 55);
+    drawGround(ctx, 650, vy2 - 55, 5);
+    // Label
+    drawLabel(ctx, 620, vy2 - 60, 'Via π-model', '#7b9dff40');
+    ctx.restore();
+
+    animFrames['via'] = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ============ SLIDE 11: AI in SI ============
+function animAI() {
+  const ctx = getCtx('canvas-ai');
+  if (!ctx) return;
+  const W = 800, H = 300;
+
+  // Neural network nodes
+  const layers = [3, 5, 5, 4, 2];
+  const nodes = [];
+
+  layers.forEach((count, li) => {
+    const x = 100 + (li / (layers.length - 1)) * 600;
+    for (let ni = 0; ni < count; ni++) {
+      const y = 60 + (ni / (count - 1)) * 180;
+      nodes.push({ x, y, layer: li, index: ni });
+    }
+  });
+
+  function draw() {
+    globalTime += 0.02;
+    ctx.fillStyle = 'rgba(5,5,30,0.95)';
+    ctx.fillRect(0, 0, W, H);
+
+    // Connections
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        if (nodes[j].layer === nodes[i].layer + 1) {
+          const pulse = Math.sin(globalTime * 2 + i + j) * 0.5 + 0.5;
+          ctx.strokeStyle = `rgba(123, 45, 255, ${0.1 + pulse * 0.25})`;
+          ctx.lineWidth = 0.5 + pulse;
+          ctx.beginPath();
+          ctx.moveTo(nodes[i].x, nodes[i].y);
+          ctx.lineTo(nodes[j].x, nodes[j].y);
+          ctx.stroke();
+
+          // Traveling data point
+          if (pulse > 0.8) {
+            const t = (globalTime * 2 + i * 0.1) % 1;
+            const px = nodes[i].x + (nodes[j].x - nodes[i].x) * t;
+            const py = nodes[i].y + (nodes[j].y - nodes[i].y) * t;
+            ctx.fillStyle = `rgba(0, 240, 255, ${pulse})`;
+            ctx.beginPath();
+            ctx.arc(px, py, 2, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      }
+    }
+
+    // Nodes
+    nodes.forEach((n, idx) => {
+      const pulse = Math.sin(globalTime * 3 + idx) * 0.3 + 0.7;
+      const r = 8 + pulse * 3;
+
+      // Glow
+      const grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, r * 2);
+      if (n.layer === 0) {
+        grad.addColorStop(0, `rgba(0, 240, 255, ${pulse * 0.4})`);
+        grad.addColorStop(1, 'rgba(0, 240, 255, 0)');
+      } else if (n.layer === layers.length - 1) {
+        grad.addColorStop(0, `rgba(255, 45, 123, ${pulse * 0.4})`);
+        grad.addColorStop(1, 'rgba(255, 45, 123, 0)');
+      } else {
+        grad.addColorStop(0, `rgba(123, 45, 255, ${pulse * 0.4})`);
+        grad.addColorStop(1, 'rgba(123, 45, 255, 0)');
+      }
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, r * 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Node circle
+      ctx.fillStyle = n.layer === 0 ? '#00f0ff' : n.layer === layers.length - 1 ? '#ff2d7b' : '#7b2dff';
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // Layer labels
+    ctx.fillStyle = '#b0b0dd';
+    ctx.font = '10px Share Tech Mono';
+    ctx.fillText('Layout', 75, 270);
+    ctx.fillText('Features', 210, 270);
+    ctx.fillText('Hidden', 340, 270);
+    ctx.fillText('SI Params', 470, 270);
+    ctx.fillText('Prediction', 600, 270);
+
+    // Top label
+    ctx.fillStyle = '#7b2dff';
+    ctx.font = 'bold 12px Orbitron';
+    ctx.fillText('Neural Network for SI Prediction', 250, 25);
+
+    // Fun faces
+    drawFace(ctx, 80, 140, 12, 'shocked', globalTime);
+    drawBubble(ctx, 80, 115, 'Exam aaga!', '#00f0ff', globalTime);
+    drawFace(ctx, 700, 140, 12, 'cool', globalTime);
+    drawBubble(ctx, 700, 115, 'Past papers done!', '#ff2d7b', globalTime);
+    drawFace(ctx, 400, 25, 10, 'wink', globalTime);
+    drawBubble(ctx, 400, 5, 'Topper in the house!', '#7b2dff', globalTime);
+
+    animFrames['ai'] = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ============ INIT ============
+showSlide(0);
+</script>
+</body>
+</html>
