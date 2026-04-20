@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Signal Integrity - AI-Powered Presentation</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Noto+Nastaliq+Urdu&display=swap');
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -364,6 +364,84 @@
     80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
     100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); }
   }
+
+  /* Personal notes (Urdu) */
+  .personal-notes {
+    background: linear-gradient(135deg, rgba(123,45,255,0.08), rgba(0,240,255,0.05));
+    border: 1px solid rgba(123,45,255,0.2);
+    border-left: 3px solid #7b2dff;
+    border-radius: 8px;
+    padding: 10px 18px;
+    margin: 8px auto;
+    max-width: 850px;
+    text-align: right;
+    direction: rtl;
+    font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', 'Tahoma', serif;
+    font-size: 1em;
+    line-height: 2.2;
+    color: #b0b0dd;
+    display: none !important;
+  }
+
+  body.show-notes .personal-notes {
+    display: block !important;
+  }
+
+  .personal-notes .pn-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8em;
+    color: #7b2dff;
+    letter-spacing: 1px;
+    direction: ltr;
+    text-align: left;
+    margin-bottom: 4px;
+  }
+
+  .notes-toggle {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 200;
+    background: rgba(123,45,255,0.15);
+    border: 1px solid rgba(123,45,255,0.3);
+    color: #7b2dff;
+    padding: 6px 12px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7em;
+    cursor: pointer;
+    border-radius: 6px;
+    opacity: 0.3;
+    transition: opacity 0.3s;
+  }
+
+  .notes-toggle:hover {
+    opacity: 1;
+  }
+
+  body.show-notes .notes-toggle {
+    background: rgba(123,45,255,0.4);
+    border-color: #7b2dff;
+    opacity: 0.8;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .slide h1 { font-size: 2em; }
+    .slide h2 { font-size: 1.5em; }
+    .slide p, .slide li { font-size: 1.1em; }
+    .canvas-container { width: 95vw; max-width: 800px; height: auto; }
+    .two-col { flex-direction: column; gap: 15px; }
+    .formula-box { font-size: 1em; }
+  }
+
+  @media (max-width: 600px) {
+    .slide { padding: 15px; }
+    .slide h1 { font-size: 1.5em; }
+    .slide h2 { font-size: 1.2em; }
+    .slide p, .slide li { font-size: 0.95em; }
+    .def-box, .fix-box, .personal-notes { padding: 8px 12px; }
+    .nav button { padding: 8px 14px; font-size: 0.75em; }
+  }
 </style>
 </head>
 <body>
@@ -371,13 +449,15 @@
 <canvas id="bg-canvas"></canvas>
 <div class="grid-overlay"></div>
 <div class="progress-bar" id="progressBar"></div>
+<button class="notes-toggle" onclick="toggleNotes()" title="Press N to toggle">&#9776; Notes</button>
 
 <!-- SLIDE 0: Title -->
 <div class="slide title-slide active" id="slide-0">
   <div class="ai-badge">AI-POWERED PRESENTATION</div>
   <h1>Signal Integrity</h1>
   <p class="subtitle">Understanding High-Speed Digital Design</p>
-  <p class="small-text" style="margin-top: 30px; color: #8ab4ff;">Presented to: Boss Inzmam & Boss Rizwan</p>
+  <p class="small-text" style="margin-top: 30px; color: #8ab4ff;">Presented to: Dr. Rizwan and Inzmam</p>
+  <p class="small-text" style="color: #00f0ff; letter-spacing: 3px; font-weight: 600;">SEMPHOS</p>
   <p class="small-text" style="color: rgba(123,157,255,0.5);">Press Arrow Keys or Click Navigation to Continue</p>
 </div>
 
@@ -386,15 +466,19 @@
   <h2>What is Signal Integrity?</h2>
   <div class="def-box">
     <div class="def-label">SIMPLE DEFINITION</div>
-    <div class="def-text">Sochein aap ne WhatsApp pe voice note bheja — agar dusre side pe <strong>"haan?" "kya?" "phir se bhej!"</strong> na aaye, toh Signal Integrity theek hai! Signal bhi yahi hai — receiver ko sahi samajh aaya = SI clear hai.</div>
+    <div class="def-text">Think of sending a WhatsApp voice note — if the other side doesn't respond with <strong>"what?" "sorry?" "send again!"</strong> then Signal Integrity is fine! Same for signals — if the receiver understood it correctly, SI is clear.</div>
   </div>
   <div class="def-box" style="border-left-color: #ff2d7b; background: linear-gradient(135deg, rgba(255,45,123,0.06), rgba(255,100,50,0.04));">
-    <div class="def-label" style="color: #ff5a9e;">HIGH SPEED — KAB TRACE TRANSMISSION LINE BANTA HAI?</div>
-    <div class="def-text">Jab signal ki <strong>rise time</strong> itni fast ho ke signal trace ke <strong>aadhe</strong> se zyada travel kar le <strong>pehle hi</strong> edge complete ho — tab simple trace <strong>transmission line</strong> ban jata hai! Rule of thumb: <strong>L > Tr × v / 6</strong> — FR4 pe 1ns rise time = agar trace <strong>1 inch se lambi</strong> hai, transmission line samjho!</div>
+    <div class="def-label" style="color: #ff5a9e;">WHEN DOES A TRACE BECOME A TRANSMISSION LINE?</div>
+    <div class="def-text">When the signal's <strong>rise time</strong> is so fast that the signal travels more than <strong>half</strong> the trace length <strong>before</strong> the edge completes — the simple trace becomes a <strong>transmission line</strong>! Rule of thumb: <strong>L > Tr × v / 6</strong> — On FR4 with 1ns rise time, if the trace is <strong>longer than 1 inch</strong>, treat it as a transmission line!</div>
+  </div>
+  <div class="personal-notes">
+    <div class="pn-label">PERSONAL NOTES</div>
+    سوچو آپ نے واٹس ایپ پر وائس نوٹ بھیجا — اگر دوسری طرف سے "ہاں؟" "کیا؟" "پھر بھیج!" نہ آئے تو Signal Integrity ٹھیک ہے! جب signal کی rise time اِتنی تیز ہو کہ trace کے آدھے سے زیادہ سفر کر لے — تب simple trace transmission line بن جاتا ہے!
   </div>
   <div style="text-align: center;">
     <div class="formula-box">Trace length > (Tr × v) / 6 = TRANSMISSION LINE!</div>
-    <p class="small-text" style="color: #ff5a9e; margin-top: 4px;">Tr = rise time, v ≈ 6 inches/ns (FR4). Example: 500ps rise time → 0.5 inch se upar = T-line!</p>
+    <p class="small-text" style="color: #ff5a9e; margin-top: 4px;">Tr = rise time, v ≈ 6 inches/ns (FR4). Example: 500ps rise time → anything above 0.5 inch = T-line!</p>
   </div>
   <div style="margin-top: 8px; text-align: center;">
     <span class="tag tag-blue">Transmission Lines</span>
@@ -418,21 +502,25 @@
   <h2>Transmission Lines</h2>
   <div class="def-box">
     <div class="def-label">SIMPLE DEFINITION</div>
-    <div class="def-text">PCB ki trace <strong>highway</strong> jaisi hai — lekin high speed pe har 5 steps pe <strong>speed breaker</strong> aa jata hai! Simple copper wire R, L, C ka cluster ban jata hai. Road aam lagti hai, lekin underneath pura circus chal raha hai.</div>
+    <div class="def-text">A PCB trace is like a <strong>highway</strong> — but at high speed, there's a <strong>speed breaker every 5 steps!</strong> A simple copper wire becomes a cluster of R, L, C. The road looks normal, but underneath there's a whole circus going on.</div>
   </div>
   <div class="def-box" style="border-left-color: #ffcc00; background: linear-gradient(135deg, rgba(255,200,0,0.05), rgba(255,150,0,0.03));">
-    <div class="def-label" style="color: #ffcc00;">KYA HO JATA HAI? TRACE R,L,C CLUSTER KAISE BANTA HAI</div>
+    <div class="def-label" style="color: #ffcc00;">WHAT HAPPENS? HOW R, L, C, G FORMS A CLUSTER</div>
     <div class="def-text">
-      <strong>R (Resistance):</strong> Copper wire bhi thora <strong>resist karta hai</strong> — jaise purani pipe se kam paani aata hai. Signal ki energy thori <strong>garmi mein zaya</strong> ho jati hai.<br>
-      <strong>L (Inductance):</strong> Current flow karta hai toh aas paas <strong>chhota magnetic field</strong> banta hai — jaise fan on karo toh hawa feel hoti hai. Yeh field <strong>signal ko rokne ki koshish</strong> karta hai = speed breaker!<br>
-      <strong>C (Capacitance):</strong> Trace neeche <strong>ground plane</strong> hai — dono ke beech FR4 (dielectric) hai. Yeh ek <strong>chhota capacitor</strong> ban jata hai — jaise do plates ke beech hawa. Signal ki energy thori <strong>charge mein store</strong> ho jati hai.<br>
-      <strong>G (Conductance):</strong> FR4 perfect insulator nahi — thora thora <strong>leakage</strong> hota hai, jaise cracked pipe se paani <strong>tapakta</strong> rehta hai.<br><br>
-      <strong>Result:</strong> Yeh sab mil ke har millimeter pe ek chhota circuit banate hain — aur <strong>poori trace ek lambi chain</strong> ban jati hai! Is liye high speed pe trace "wire" nahi rehti — <strong>transmission line</strong> ban jati hai!
+      <strong>R (Resistance):</strong> Even copper wire <strong>resists</strong> — like an old pipe with reduced water flow. Signal energy is partially <strong>wasted as heat</strong>.<br>
+      <strong>L (Inductance):</strong> When current flows, a small <strong>magnetic field</strong> forms around it — like the breeze from a fan. This field <strong>tries to resist signal changes</strong> = speed breaker!<br>
+      <strong>C (Capacitance):</strong> Below the trace is a <strong>ground plane</strong> — separated by FR4 dielectric. This forms a <strong>tiny capacitor</strong> — like two plates with air between them. Signal energy gets partially <strong>stored as charge</strong>.<br>
+      <strong>G (Conductance):</strong> FR4 is not a perfect insulator — there's some <strong>leakage</strong>, like water dripping from a cracked pipe.<br><br>
+      <strong>Result:</strong> All these combine at every millimeter to form a small circuit — and the <strong>entire trace becomes a long chain!</strong> That's why at high speed, a trace is no longer a "wire" — it becomes a <strong>transmission line!</strong>
     </div>
+  </div>
+  <div class="personal-notes">
+    <div class="pn-label">PERSONAL NOTES</div>
+    PCB کی trace highway جیسی ہے — لیکن高速 پر ہر 5 قدم پر speed breaker آ جاتا ہے! Copper wire بھی تھوڑا resist کرتا ہے، current سے magnetic field بنتا ہے، trace اور ground کے بیچ capacitor بنتا ہے، FR4 سے leakage ہوتا ہے۔ یہ سب مل کر trace کو transmission line بنا دیتے ہیں!
   </div>
   <div class="fix-box">
     <div class="fix-label">HOW TO DESIGN IT RIGHT</div>
-    <div class="fix-text"><strong>Saturn PCB tool</strong> download karo, 5 mil width set karo FR4 ke liye. Ground plane ko <strong>unbroken</strong> rakhna — yehi woh 50Ω ka secret mantra hai!</div>
+    <div class="fix-text">Download <strong>Saturn PCB tool</strong>, set 5 mil width for FR4. Keep the ground plane <strong>unbroken</strong> — this is the secret mantra for achieving 50Ω!</div>
   </div>
   <div class="canvas-container">
     <canvas id="canvas-tline" width="800" height="350"></canvas>
@@ -458,11 +546,15 @@
   <h2>Reflection</h2>
   <div class="def-box">
     <div class="def-label">SIMPLE DEFINITION</div>
-    <div class="def-text">Gallery mein ball maara — <strong>wapas aake aap ki mara!</strong> Yehi reflection hai. Signal jab impedance change hit karta hai toh <strong>bounce back</strong> ho kar chaos create karta hai. Signal kehte hai "mujhe wapas jaane do!"</div>
+    <div class="def-text">You throw a ball in a gallery — <strong>it bounces back and hits you!</strong> That's reflection. When a signal hits an impedance change, it <strong>bounces back</strong> and creates chaos. The signal says "let me go back!"</div>
+  </div>
+  <div class="personal-notes">
+    <div class="pn-label">PERSONAL NOTES</div>
+    گیلری میں گیند ماری — واپس آ کر آپ کو مارا! یہی reflection ہے۔ جب signal impedance change سے ٹکراتا ہے تو bounce back ہو کر chaos بنتا ہے۔
   </div>
   <div class="fix-box">
     <div class="fix-label">HOW TO FIX REFLECTIONS</div>
-    <div class="fix-text"><strong>Ek 33Ω resistor laga do</strong> source pe. Itna sasta hai lekin signal ko <strong>lakhon ka nuksan</strong> bachata hai! Trace width suddenly mat badalna, aur stubs se door raho. <strong>DDR clock</strong> = always series termination at CPU.</div>
+    <div class="fix-text">Place a <strong>33Ω series resistor</strong> at the source. It's so cheap yet saves <strong>millions in damage!</strong> Don't change trace width suddenly, and avoid stubs. <strong>DDR clock</strong> = always series termination at CPU.</div>
   </div>
     <canvas id="canvas-reflection" width="800" height="350"></canvas>
   </div>
@@ -487,11 +579,15 @@
   <h2>Impedance Matching</h2>
   <div class="def-box">
     <div class="def-label">SIMPLE DEFINITION</div>
-    <div class="def-text">Shoes ka size <strong>exactly fit</strong> hona chahiye — 42 ka foot pe 42 ka shoe. Loose hai toh giroge, tight hai toh dard hoga! Impedance bhi <strong>exactly match</strong> hona chahiye warna signal <strong>"trip" kar ke gir jata hai!</strong></div>
+    <div class="def-text">Your shoe size must <strong>exactly fit</strong> — size 42 foot needs a size 42 shoe. Too loose and you'll trip, too tight and it hurts! Impedance must also <strong>exactly match</strong> or the signal <strong>trips and falls!</strong></div>
+  </div>
+  <div class="personal-notes">
+    <div class="pn-label">PERSONAL NOTES</div>
+    جوتے کا سائز بالکل فِٹ ہونا چاہیے — 42 کے پیر پر 42 کا جوتا۔ ڈھیلا ہے تو گر جاؤ گے، تنگ ہے تو درد ہوگا! Impedance بھی بالکل match ہونا چاہیے ورنں signal ٹرپ کر کے گر جاتا ہے!
   </div>
   <div class="fix-box">
     <div class="fix-label">HOW TO ACHIEVE MATCHING</div>
-    <div class="fix-text"><strong>Stackup calculator</strong> se 50Ω set karo. USB/HDMI = <strong>100Ω differential</strong>. Connector ke neeche <strong>cutout shapes</strong> — shoes ka perfect fit silwane jaisa!</div>
+    <div class="fix-text">Use a <strong>stackup calculator</strong> to set 50Ω. USB/HDMI = <strong>100Ω differential</strong>. Add <strong>cutout shapes</strong> under connectors — like getting the perfect shoe fit tailored!</div>
   </div>
   <div class="canvas-container">
     <canvas id="canvas-impedance" width="800" height="350"></canvas>
@@ -509,11 +605,15 @@
   <h2>Crosstalk</h2>
   <div class="def-box">
     <div class="def-label">SIMPLE DEFINITION</div>
-    <div class="def-text">Exam mein bagal wala <strong>cheat kar raha hai</strong> aur aap us ki awaaz sun rahe ho — <strong>concentration kharab!</strong> Ek trace ka signal dusri trace mein chala jaye = <strong>Crosstalk</strong>. Trace jitni kareeb, utna zyada "cheating"!</div>
+    <div class="def-text">During an exam, the person next to you is <strong>cheating</strong> and you can hear them — <strong>your concentration is ruined!</strong> When one trace's signal leaks into another trace = <strong>Crosstalk</strong>. The closer the traces, the more "cheating"!</div>
+  </div>
+  <div class="personal-notes">
+    <div class="pn-label">PERSONAL NOTES</div>
+    امتحان میں بغل والا cheat کر رہا ہے اور آپ اس کی آواز سن رہے ہیں — concentration خراب! ایک trace کا signal دوسری trace میں چلا جائے = Crosstalk۔ trace جتنی قریب، اتنّا زیادہ cheating!
   </div>
   <div class="fix-box">
     <div class="fix-label">HOW TO REDUCE CROSSTALK</div>
-    <div class="fix-text"><strong>3x trace width</strong> distance = <strong>Social Distancing!</strong> Ground guard trace beech mein = <strong>Mask pehnana!</strong> Clock kabhi data ke saath parallel mat bhagna — <strong>exam mein ek hi table pe mat baithna!</strong></div>
+    <div class="fix-text"><strong>3x trace width</strong> spacing = <strong>Social Distancing!</strong> Ground guard trace in between = <strong>Wearing a mask!</strong> Never run clock parallel to data — <strong>don't sit at the same table during an exam!</strong></div>
   </div>
   <div class="canvas-container">
     <canvas id="canvas-crosstalk" width="800" height="350"></canvas>
@@ -535,11 +635,15 @@
   <h2>Eye Diagrams</h2>
   <div class="def-box">
     <div class="def-label">SIMPLE DEFINITION</div>
-    <div class="def-text">Doctor ke paas <strong>eye test</strong> — aankh khuli hai toh signal <strong>healthy</strong>, band ho rahi hai toh <strong>"chashma lagao!"</strong> Eye diagram signal ki health checkup hai — bada khula aankh = signal fit hai!</div>
+    <div class="def-text">At the doctor's <strong>eye test</strong> — if the eye is open, the signal is <strong>healthy</strong>; if it's closing, you need <strong>"glasses!"</strong> An eye diagram is a signal health checkup — a wide open eye = signal is fit!</div>
+  </div>
+  <div class="personal-notes">
+    <div class="pn-label">PERSONAL NOTES</div>
+    ڈاکٹر کے پاس eye test — آنکھ کھلی ہے تو signal healthy، بند ہو رہی ہے تو "چشمہ لگاؤ!" Eye diagram signal کی health checkup ہے — بڑا کھلا آنکھ = signal فِٹ ہے!
   </div>
   <div class="fix-box">
     <div class="fix-label">HOW TO OPEN A CLOSED EYE</div>
-    <div class="fix-text"><strong>Closed eye? Chashma pehnao!</strong> = Crystal oscillator lagao (RC nahi). Decoupling caps chip ke paas rakhna. Edge rate slow karo series resistor se. Aur agar phir bhi nahi khula toh <strong>pre-emphasis ka "laser surgery"</strong> bhi hai!</div>
+    <div class="fix-text"><strong>Closed eye? Get glasses!</strong> = Use a crystal oscillator (not RC). Place decoupling caps close to the chip. Slow the edge rate with a series resistor. And if it still won't open, there's always <strong>pre-emphasis "laser surgery!"</strong></div>
   </div>
   <div class="canvas-container">
     <canvas id="canvas-eye" width="800" height="350"></canvas>
@@ -557,11 +661,15 @@
   <h2>Termination Strategies</h2>
   <div class="def-box">
     <div class="def-label">SIMPLE DEFINITION</div>
-    <div class="def-text">Story ke end mein <strong>Full Stop "."</strong> lagao — warna sentence kabhi khatam nahi hoga! Termination = signal ke end pe resistor lagana taake woh <strong>wapas na aaye</strong> aur ringing na kare.</div>
+    <div class="def-text">Put a <strong>Full Stop "."</strong> at the end of the story — otherwise the sentence never ends! Termination = placing a resistor at the signal's end so it <strong>doesn't bounce back</strong> and cause ringing.</div>
+  </div>
+  <div class="personal-notes">
+    <div class="pn-label">PERSONAL NOTES</div>
+    کہانی کے آخر میں Full Stop "." لگاؤ — ورنہ جملہ کبھی ختم نہیں ہوگا! Termination = signal کے آخر پر resistor لگانا تاکہ وہ واپس نہ آئے اور ringing نہ کرے۔
   </div>
   <div class="fix-box">
     <div class="fix-label">WHICH ONE TO USE — REAL EXAMPLE</div>
-    <div class="fix-text"><strong>DDR clock:</strong> 33Ω series at CPU. <strong>PCIe/HDMI:</strong> 100Ω diff at receiver. <strong>Clock:</strong> AC termination (power bachata hai). <strong>Yaad rakho:</strong> Resistor JAHAN lagana hai WAHAN lagana hai — <strong>500 mils door matlab compromise!</strong></div>
+    <div class="fix-text"><strong>DDR clock:</strong> 33Ω series at CPU. <strong>PCIe/HDMI:</strong> 100Ω diff at receiver. <strong>Clock:</strong> AC termination (saves power). <strong>Remember:</strong> Place the resistor EXACTLY where it needs to go — <strong>500 mils away means compromised signal!</strong></div>
   </div>
   <div class="two-col">
     <div class="col">
@@ -587,11 +695,15 @@
   <h2>EMI & EMC</h2>
   <div class="def-box">
     <div class="def-label">SIMPLE DEFINITION</div>
-    <div class="def-text">Raat <strong>3 baje DJ baja rahe ho</strong> aur padosi ne police bulayi — yeh <strong>EMI</strong> hai! Aapka board shor machata hai. <strong>EMC</strong> = padosi ko disturb mat karo, aur khud bhi kisi ke shor se pareshan mat ho. <strong>Achha neighbour bano!</strong></div>
+    <div class="def-text">Playing <strong>DJ at 3 AM</strong> and the neighbor calls the police — that's <strong>EMI!</strong> Your board is making noise. <strong>EMC</strong> = don't disturb your neighbor, and don't get disturbed by others' noise. <strong>Be a good neighbor!</strong></div>
+  </div>
+  <div class="personal-notes">
+    <div class="pn-label">PERSONAL NOTES</div>
+    رات 3 بجے DJ بجا رہے ہو اور پڑوسی نے پولیس بلا لی — یہ EMI ہے! آپ کا board شور مچاتا ہے۔ EMC = پڑوسی کو disturb مت کرو، اور خود بہ کسی کے شور سے پریشان مت ہو۔ اچھا neighbour بنو!
   </div>
   <div class="fix-box">
     <div class="fix-label">HOW TO PASS EMI TESTING</div>
-    <div class="fix-text"><strong>Ground plane = aapka bodyguard.</strong> Ferrite bead = noise ka maskan. Stitching via = boundary wall. <strong>Inke bina board testing fail!</strong> Switching loops chhota rakho — decoupling caps chip ke moo pe lagao!</div>
+    <div class="fix-text"><strong>Ground plane = your bodyguard.</strong> Ferrite bead = noise filter. Stitching vias = boundary wall. <strong>Without these, the board will fail testing!</strong> Keep switching loops small — place decoupling caps right at the chip's mouth!</div>
   </div>
   <div class="canvas-container">
     <canvas id="canvas-emi" width="800" height="350"></canvas>
@@ -621,11 +733,15 @@
   <h2>Power Integrity</h2>
   <div class="def-box">
     <div class="def-label">SIMPLE DEFINITION</div>
-    <div class="def-text">Jab aap <strong>AC on karte ho aur light dim</strong> ho jati hai — yeh Power Integrity ka issue hai! Har chip ko clean 3.3V chahiye, <strong>fluctuation nahi chalega.</strong> "Sab ko ek jaisi roti milegi" — yeh PI ka motto hai!</div>
+    <div class="def-text">When you <strong>turn on the AC and the lights dim</strong> — that's a Power Integrity issue! Every chip needs clean 3.3V, <strong>no fluctuations allowed.</strong> "Everyone gets equal bread" — that's the PI motto!</div>
+  </div>
+  <div class="personal-notes">
+    <div class="pn-label">PERSONAL NOTES</div>
+    جب AC آن کرتے ہو اور light dim ہو جاتی ہے — یہ Power Integrity کا issue ہے! ہر chip کو clean 3.3V چاہیے، fluctuation نہیں چلے گا۔ "سب کو ایک جیسی روٹی ملے گی" — یہ PI کا motto ہے!
   </div>
   <div class="fix-box">
     <div class="fix-label">HOW TO FIX POWER INTEGRITY</div>
-    <div class="fix-text"><strong>100nF + 10µF caps chip ke moo pe</strong> — 2mm se zyada door nahi! Bulk caps (47-100µF) board ke gate pe. <strong>Solid power/ground planes — split mat karna!</strong> PDN simulate karo, flat response below Z_target chahiye.</div>
+    <div class="fix-text">Place <strong>100nF + 10µF caps right at the chip</strong> — no more than 2mm away! Bulk caps (47-100µF) at the board edge. <strong>Keep solid power/ground planes — never split them!</strong> Simulate PDN for flat response below Z_target.</div>
   </div>
   <div class="canvas-container">
     <canvas id="canvas-pi" width="800" height="350"></canvas>
@@ -639,11 +755,15 @@
   <h2>Via Effects in High-Speed Design</h2>
   <div class="def-box">
     <div class="def-label">SIMPLE DEFINITION</div>
-    <div class="def-text">Highway chal rahe the aur <strong>achanak speed breaker + pothole</strong> aa gaya — yeh <strong>Via</strong> hai! Layer change karte waqt signal ko <strong>"dhachka"</strong> lagta hai. Via = signal ka laacha (bump) jo mushkil mein daalta hai!</div>
+    <div class="def-text">Cruising on the highway and suddenly <strong>a speed breaker + pothole appears</strong> — that's a <strong>Via!</strong> When changing layers, the signal gets a <strong>jolt</strong>. A via is the bump that makes the signal's journey difficult!</div>
+  </div>
+  <div class="personal-notes">
+    <div class="pn-label">PERSONAL NOTES</div>
+    highway چل رہے تھے اور اچانک speed breaker + pothole آ گیا — یہ Via ہے! layer change کرتے وقت signal کو دھچکا لگتا ہے۔ Via = signal کا لچھا (bump) جو مشکل میں ڈالتا ہے!
   </div>
   <div class="fix-box">
     <div class="fix-label">HOW TO MINIMIZE VIA DAMAGE</div>
-    <div class="fix-text"><strong>Back-drill = via ka extra hissa kaat do!</strong> Ground return via = bodyguard har signal via ke saath. Micro-vias = aam se chhota, kam nuksan. <strong>Critical nets pe via kam = kam speed breaker = smooth drive!</strong></div>
+    <div class="fix-text"><strong>Back-drill = cut off the extra via stub!</strong> Ground return via = a bodyguard for every signal via. Micro-vias = smaller than normal, less damage. <strong>Fewer vias on critical nets = fewer speed breakers = smooth drive!</strong></div>
   </div>
   <div class="two-col">
     <div class="col">
@@ -674,11 +794,15 @@
   <h2>AI in Signal Integrity</h2>
   <div class="def-box">
     <div class="def-label">SIMPLE DEFINITION</div>
-    <div class="def-text">Jo student exam se pehle <strong>past papers solve karta hai</strong>, woh paper mein aasaani se crack kar leta — <strong>AI bhi yahi karta hai!</strong> Hazaaron designs seekh ke instant answer de deta hai. <strong>"Topper student"</strong> jo pehle se sab jaanta hai!</div>
+    <div class="def-text">A student who <strong>solves past papers before the exam</strong> can easily crack it — <strong>AI does exactly this!</strong> It learns from thousands of designs and gives instant answers. It's the <strong>"topper student"</strong> who already knows everything!</div>
+  </div>
+  <div class="personal-notes">
+    <div class="pn-label">PERSONAL NOTES</div>
+    جو student امتحان سے پہلے past papers solve کرتا ہے، وہ paper میں آسانی سے crack کر لیتا ہے — AI بھی یہی کرتا ہے! ہزاروں designs سیکھ کر instant answer دے دیتا ہے۔ "Topper student" جو پہلے سے سب جانتا ہے!
   </div>
   <div class="fix-box">
     <div class="fix-label">HOW AI HELPS YOU RIGHT NOW</div>
-    <div class="fix-text"><strong>Cadence Sigrity = SI ka doctor.</strong> Ansys SIwave = future predictor. AI copilot = termination value suggest karta hai. <strong>Apna model bhi bana sakte ho</strong> Python + TensorFlow se — exam se pehle past paper solve karne jaisa!</div>
+    <div class="fix-text"><strong>Cadence Sigrity = the SI doctor.</strong> Ansys SIwave = future predictor. AI copilot suggests termination values. <strong>You can even build your own model</strong> with Python + TensorFlow — like solving past papers before the exam!</div>
   </div>
   <div class="two-col">
     <div class="col">
@@ -704,7 +828,7 @@
   <h2>Summary</h2>
   <div class="def-box">
     <div class="def-label">KEY REMINDER</div>
-    <div class="def-text">Signal Integrity ka summary ek line mein: <strong>"Signal ko sahi shape mein, sahi time pe, bina kisi ko disturb kiye pahuncho!"</strong> Bas yahi yaad rakho — baaki sab is se nikalta hai!</div>
+    <div class="def-text">Signal Integrity summary in one line: <strong>"Deliver the signal in the right shape, at the right time, without disturbing anything!"</strong> Remember this — everything else follows from here!</div>
   </div>
   <div class="two-col" style="max-width: 900px;">
     <div class="col">
@@ -729,7 +853,8 @@
     </div>
   </div>
   <p class="subtitle" style="margin-top: 30px;">Thank You!</p>
-  <p class="small-text" style="color: #8ab4ff;">Prepared for Boss Inzmam & Boss Rizwan</p>
+  <p class="small-text" style="color: #8ab4ff;">Prepared for Dr. Rizwan and Inzmam</p>
+  <p class="small-text" style="color: #00f0ff; letter-spacing: 3px; font-weight: 600;">SEMPHOS</p>
 </div>
 
 <!-- Navigation -->
@@ -905,7 +1030,12 @@ function prevStep() {
 document.addEventListener('keydown', e => {
   if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextStep(); }
   if (e.key === 'ArrowLeft') { e.preventDefault(); prevStep(); }
+  if (e.key === 'n' || e.key === 'N') { e.preventDefault(); toggleNotes(); }
 });
+
+function toggleNotes() {
+  document.body.classList.toggle('show-notes');
+}
 
 // ============ NEURAL NETWORK BACKGROUND ============
 const bgCanvas = document.getElementById('bg-canvas');
@@ -1327,7 +1457,7 @@ function animSIOverview() {
     ctx.fillText('Rise time → 0', 430, sigY - 14);
 
     // Fun bubble
-    drawBubble(ctx, 700, sigY - 5, 'DHACHKA!', '#ff4444', globalTime);
+    drawBubble(ctx, 700, sigY - 5, 'JOLT!', '#ff4444', globalTime);
 
     animFrames['si'] = requestAnimationFrame(draw);
   }
@@ -1413,7 +1543,7 @@ function animTLine() {
     const waveFaceX = startX + 300;
     const waveFaceY = 310 + Math.sin(300 * 0.03 - globalTime * 4) * 15;
     drawFace(ctx, waveFaceX, waveFaceY - 15, 10, 'happy', globalTime);
-    drawBubble(ctx, waveFaceX, waveFaceY - 32, 'Weeee!', '#00ff88', globalTime);
+    drawBubble(ctx, waveFaceX, waveFaceY - 32, 'Wheee!', '#00ff88', globalTime);
 
     // Grumpy face at a speed breaker
     const bumpX = startX + 4 * segW + 25;
@@ -1448,8 +1578,8 @@ function animTLine() {
     ctx.fillText('R', expX + 2, expBaseY + 4);
     ctx.font = '8px Rajdhani';
     ctx.fillStyle = '#ffaa44';
-    ctx.fillText('Copper resist', expX + 15, expBaseY - 2);
-    ctx.fillText('= garmi (heat)', expX + 15, expBaseY + 10);
+    ctx.fillText('Copper resists', expX + 15, expBaseY - 2);
+    ctx.fillText('= wasted as heat', expX + 15, expBaseY + 10);
 
     // L explanation — magnetic field
     const lY = expBaseY + 55;
@@ -1506,7 +1636,7 @@ function animTLine() {
     ctx.font = '8px Rajdhani';
     ctx.fillStyle = '#ff5a9e';
     ctx.fillText('Trace + GND plate', expX + 15, cY - 4);
-    ctx.fillText('= chhota capacitor!', expX + 15, cY + 8);
+    ctx.fillText('= tiny capacitor!', expX + 15, cY + 8);
 
     // G explanation — leakage through dielectric
     const gY = expBaseY + 165;
@@ -1531,17 +1661,17 @@ function animTLine() {
     ctx.font = '8px Rajdhani';
     ctx.fillStyle = '#ffdd44';
     ctx.fillText('FR4 leakage', expX + 15, gY - 2);
-    ctx.fillText('= tapakta pipe!', expX + 15, gY + 10);
+    ctx.fillText('= leaky pipe!', expX + 15, gY + 10);
 
     // Bottom summary
     ctx.fillStyle = '#c8c8ee';
     ctx.font = '9px Rajdhani';
-    ctx.fillText('Har mm pe yeh sab mil ke', expX - 40, expBaseY + 200);
-    ctx.fillText('ek chhota circuit banate hain!', expX - 40, expBaseY + 212);
+    ctx.fillText('Every mm these combine to', expX - 40, expBaseY + 200);
+    ctx.fillText('form a tiny circuit!', expX - 40, expBaseY + 212);
 
     // Fun face — confused trace
     drawFace(ctx, expX - 5, expBaseY + 230, 10, 'shocked', globalTime);
-    drawBubble(ctx, expX - 5, expBaseY + 210, 'Main wire tha!', '#b0b0dd', globalTime);
+    drawBubble(ctx, expX - 5, expBaseY + 210, 'I was just a wire!', '#b0b0dd', globalTime);
 
     ctx.restore();
 
@@ -1697,17 +1827,17 @@ function animReflection() {
 
     // Fun faces on the good side
     drawFace(ctx, W/4, 185, 12, 'happy', globalTime);
-    drawBubble(ctx, W/4, 158, 'Maza aa gaya!', '#00ff88', globalTime);
+    drawBubble(ctx, W/4, 158, 'Nice & smooth!', '#00ff88', globalTime);
 
     // Fun faces on the bad side
     drawFace(ctx, W * 3/4, 185, 12, 'sad', globalTime);
-    drawBubble(ctx, W * 3/4, 158, 'Mujhe chakkar aa rahe!', '#ff4444', globalTime);
+    drawBubble(ctx, W * 3/4, 158, 'Making me dizzy!', '#ff4444', globalTime);
 
     // Ball bouncing on the bad side
     const ballX = W/2 + 40 + ((globalTime * 60) % (W/2 - 70));
     const ballBounce = Math.abs(Math.sin(globalTime * 5)) * 20;
     drawFace(ctx, ballX, 310 - ballBounce, 10, 'angry', globalTime);
-    drawBubble(ctx, ballX, 280 - ballBounce, 'WAPAS JAA!', '#ff4444', globalTime);
+    drawBubble(ctx, ballX, 280 - ballBounce, 'GOING BACK!', '#ff4444', globalTime);
 
     // CIRCUIT: Reflection circuit - Source → Z0 → ZL mismatch
     ctx.save();
@@ -1873,9 +2003,9 @@ function animImpedance() {
     // Shoe analogy text
     ctx.fillStyle = '#c8c8ee';
     ctx.font = '9px Rajdhani';
-    ctx.fillText('42 ka shoe, 42 ka foot = Perfect!', 60, 340);
-    ctx.fillText('Loose shoe = gir padega!', 340, 340);
-    ctx.fillText('Tight shoe = dard hoga!', 600, 340);
+    ctx.fillText('42 shoe, 42 foot = Perfect!', 60, 340);
+    ctx.fillText('Loose shoe = trip & fall!', 340, 340);
+    ctx.fillText('Tight shoe = pain!', 600, 340);
 
     // CIRCUIT: Impedance matching circuit
     ctx.save();
@@ -1994,7 +2124,7 @@ function animCrosstalk() {
     drawFace(ctx, 60, 55, 10, 'cool', globalTime);
     drawBubble(ctx, 60, 30, 'Cheating on!', '#00f0ff', globalTime);
     drawFace(ctx, 60, 300, 10, 'sad', globalTime);
-    drawBubble(ctx, 60, 275, 'Mera paper kharab!', '#ff2d7b', globalTime);
+    drawBubble(ctx, 60, 275, 'My test is ruined!', '#ff2d7b', globalTime);
 
     // Animated coupling indicator
     const cPulse = Math.sin(globalTime * 6) * 0.5 + 0.5;
@@ -2176,14 +2306,14 @@ function animEye() {
 
     // Fun faces
     drawFace(ctx, x0 - 25, cy, 14, 'happy', globalTime);
-    drawBubble(ctx, x0 - 25, cy - 22, 'Aankh khuli!', '#00ff88', globalTime);
+    drawBubble(ctx, x0 - 25, cy - 22, 'Eye is open!', '#00ff88', globalTime);
     drawFace(ctx, x0 + width + 25, cy, 14, 'cool', globalTime);
     drawBubble(ctx, x0 + width + 25, cy - 22, 'Healthy!', '#00f0ff', globalTime);
 
     // Doctor text
     ctx.fillStyle = '#ffdd44';
     ctx.font = '10px Rajdhani';
-    ctx.fillText('Doctor: "Signal ki health theek hai!"', cx - 90, y0 + height + 35);
+    ctx.fillText('Doctor: "Signal health is good!"', cx - 90, y0 + height + 35);
 
     // CIRCUIT: TX → Channel → RX → Sampling (Eye diagram generator)
     ctx.save();
@@ -2398,7 +2528,7 @@ function animTermination() {
 
     // Fun face for the worst
     drawFace(ctx, 580, configs[2].y, 8, 'angry', globalTime);
-    drawBubble(ctx, 620, configs[2].y - 12, 'Abhi bhi ring!', '#ff2d7b', globalTime);
+    drawBubble(ctx, 620, configs[2].y - 12, 'Still ringing!', '#ff2d7b', globalTime);
 
     // CIRCUIT: Proper termination circuits
     ctx.save();
@@ -2526,9 +2656,9 @@ function animEMI() {
 
     // Fun faces
     drawFace(ctx, 50, 55, 12, 'angry', globalTime);
-    drawBubble(ctx, 90, 35, 'DJ bajao 3 baje!', '#ff2d7b', globalTime);
+    drawBubble(ctx, 90, 35, 'DJ at 3 AM!', '#ff2d7b', globalTime);
     drawFace(ctx, 750, 55, 12, 'sad', globalTime);
-    drawBubble(ctx, 710, 35, 'Police bula lungi!', '#4da8ff', globalTime);
+    drawBubble(ctx, 710, 35, 'Calling police!', '#4da8ff', globalTime);
 
     // Frequency spectrum bar
     ctx.fillStyle = 'rgba(0, 240, 255, 0.1)';
@@ -2703,7 +2833,7 @@ function animPI() {
     drawFace(ctx, 30, targetY, 10, 'happy', globalTime);
     drawBubble(ctx, 70, targetY - 14, 'Safe zone!', '#00ff88', globalTime);
     drawFace(ctx, margin.left + pw + 30, targetY - 30, 10, 'shocked', globalTime);
-    drawBubble(ctx, margin.left + pw + 30, targetY - 50, 'Light dim ho gayi!', '#ff2d7b', globalTime);
+    drawBubble(ctx, margin.left + pw + 30, targetY - 50, 'Lights went dim!', '#ff2d7b', globalTime);
 
     // CIRCUIT: PDN with decoupling caps
     ctx.save();
@@ -2927,9 +3057,9 @@ function animVia() {
 
     // Fun faces
     drawFace(ctx, 130, 50, 10, 'cool', globalTime);
-    drawBubble(ctx, 170, 30, 'Highway pe chalo!', '#00f0ff', globalTime);
+    drawBubble(ctx, 170, 30, 'On the highway!', '#00f0ff', globalTime);
     drawFace(ctx, 650, layers[2].y - 20, 10, 'shocked', globalTime);
-    drawBubble(ctx, 650, layers[2].y - 40, 'DHACHKA!', '#ffcc00', globalTime);
+    drawBubble(ctx, 650, layers[2].y - 40, 'BUMP!', '#ffcc00', globalTime);
     drawFace(ctx, viaX, 258, 8, 'angry', globalTime);
     drawBubble(ctx, viaX + 50, 258, 'Speed breaker!', '#ff6666', globalTime);
 
@@ -3065,7 +3195,7 @@ function animAI() {
 
     // Fun faces
     drawFace(ctx, 80, 140, 12, 'shocked', globalTime);
-    drawBubble(ctx, 80, 115, 'Exam aaga!', '#00f0ff', globalTime);
+    drawBubble(ctx, 80, 115, 'Exam coming!', '#00f0ff', globalTime);
     drawFace(ctx, 700, 140, 12, 'cool', globalTime);
     drawBubble(ctx, 700, 115, 'Past papers done!', '#ff2d7b', globalTime);
     drawFace(ctx, 400, 25, 10, 'wink', globalTime);
