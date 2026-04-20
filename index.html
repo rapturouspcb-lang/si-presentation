@@ -297,6 +297,73 @@
   .fix-box .fix-text strong {
     color: #4dff88;
   }
+
+  /* Phase-based progressive reveal system */
+  .phase-indicator {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .phase-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: transparent;
+    transition: all 0.3s ease;
+  }
+
+  .phase-dot.issue { border: 2px solid #ff2d7b; }
+  .phase-dot.issue.active { background: #ff2d7b; box-shadow: 0 0 10px rgba(255,45,123,0.5); }
+
+  .phase-dot.reaction { border: 2px solid #ffcc00; }
+  .phase-dot.reaction.active { background: #ffcc00; box-shadow: 0 0 10px rgba(255,204,0,0.5); }
+
+  .phase-dot.resolve { border: 2px solid #4dff88; }
+  .phase-dot.resolve.active { background: #4dff88; box-shadow: 0 0 10px rgba(77,255,136,0.5); }
+
+  .phase-label-text {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75em;
+    letter-spacing: 1px;
+    transition: color 0.3s ease;
+    min-width: 80px;
+    text-align: center;
+  }
+
+  .phase-separator {
+    width: 1px;
+    height: 20px;
+    background: rgba(0, 240, 255, 0.2);
+    margin: 0 5px;
+  }
+
+  /* Phase reveal animation */
+  .phase-announce {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.5);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.5em;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 50;
+    text-shadow: 0 0 30px currentColor;
+    transition: none;
+  }
+
+  .phase-announce.show {
+    animation: phaseAnnounce 1.2s ease forwards;
+  }
+
+  @keyframes phaseAnnounce {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+    40% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); }
+  }
 </style>
 </head>
 <body>
@@ -310,7 +377,7 @@
   <div class="ai-badge">AI-POWERED PRESENTATION</div>
   <h1>Signal Integrity</h1>
   <p class="subtitle">Understanding High-Speed Digital Design</p>
-  <p class="small-text" style="margin-top: 30px; color: #8ab4ff;">Presented to: Rizwan</p>
+  <p class="small-text" style="margin-top: 30px; color: #8ab4ff;">Presented to: Boss Inzmam & Boss Rizwan</p>
   <p class="small-text" style="color: rgba(123,157,255,0.5);">Press Arrow Keys or Click Navigation to Continue</p>
 </div>
 
@@ -662,37 +729,182 @@
     </div>
   </div>
   <p class="subtitle" style="margin-top: 30px;">Thank You!</p>
-  <p class="small-text" style="color: #8ab4ff;">Prepared for Rizwan</p>
+  <p class="small-text" style="color: #8ab4ff;">Prepared for Boss Inzmam & Boss Rizwan</p>
 </div>
 
 <!-- Navigation -->
 <div class="nav">
-  <button onclick="prevSlide()">◀ Prev</button>
+  <button onclick="prevStep()">◀ Prev</button>
+  <div class="phase-separator"></div>
+  <div class="phase-indicator" id="phaseIndicator">
+    <span class="phase-label-text" id="phaseLabel">INTRO</span>
+    <span class="phase-dot issue" id="pd1"></span>
+    <span class="phase-dot reaction" id="pd2"></span>
+    <span class="phase-dot resolve" id="pd3"></span>
+  </div>
+  <div class="phase-separator"></div>
   <span class="slide-counter" id="slideCounter">1 / 13</span>
-  <button onclick="nextSlide()">Next ▶</button>
+  <div class="phase-separator"></div>
+  <button onclick="nextStep()">Next ▶</button>
 </div>
 
+<!-- Phase announcement overlay -->
+<div class="phase-announce" id="phaseAnnounce"></div>
+
 <script>
-// ============ SLIDE NAVIGATION ============
+// ============ SLIDE NAVIGATION WITH PHASES ============
 let currentSlide = 0;
+let currentPhase = 0;
 const totalSlides = 13;
 const slides = document.querySelectorAll('.slide');
+const phasedSlides = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+const maxPhase = 3;
 
-function showSlide(n) {
+function classifyElement(el) {
+  if (el.classList.contains('def-box')) return 1;
+  if (el.classList.contains('canvas-container') || el.tagName === 'CANVAS') return 2;
+  if (el.classList.contains('fix-box')) return 3;
+  if (el.classList.contains('two-col')) return 3;
+  if (el.classList.contains('formula-box')) return 2;
+  if (el.querySelector && el.querySelector('.formula-box') && !el.classList.contains('def-box') && !el.classList.contains('fix-box')) return 2;
+  if (el.querySelector && el.querySelector('.tag')) return 3;
+  if (el.tagName === 'P' && !el.classList.contains('subtitle') && !el.classList.contains('small-text') && !el.classList.contains('interactive-hint')) return 3;
+  return 0;
+}
+
+function revealElement(el) {
+  if (el.style.display !== 'none') return;
+  el.style.transition = 'none';
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(20px)';
+  el.style.display = '';
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    });
+  });
+}
+
+function hideElement(el) {
+  el.style.display = 'none';
+}
+
+function showPhaseAnnounce(phase) {
+  const el = document.getElementById('phaseAnnounce');
+  const labels = ['', 'ISSUE', 'REACTION', 'RESOLVE'];
+  const colors = ['', '#ff2d7b', '#ffcc00', '#4dff88'];
+  el.textContent = labels[phase];
+  el.style.color = colors[phase];
+  el.classList.remove('show');
+  void el.offsetWidth;
+  el.classList.add('show');
+}
+
+function setupPhases(slideIndex) {
+  if (!phasedSlides.has(slideIndex)) {
+    currentPhase = maxPhase;
+    return;
+  }
+  currentPhase = 0;
+  const slide = slides[slideIndex];
+
+  // Clear previous phase setup
+  slide.querySelectorAll('.phase-el').forEach(el => {
+    el.style.display = '';
+    el.style.opacity = '';
+    el.style.transform = '';
+    el.style.transition = '';
+    el.classList.remove('phase-el');
+  });
+
+  // Classify and tag elements
+  Array.from(slide.children).forEach(child => {
+    const phase = classifyElement(child);
+    if (phase > 0) {
+      child.classList.add('phase-el');
+      child.setAttribute('data-phase', phase);
+      child.style.display = 'none';
+    }
+  });
+}
+
+function updatePhaseVisibility() {
+  if (!phasedSlides.has(currentSlide)) {
+    updatePhaseIndicator();
+    return;
+  }
+  slides[currentSlide].querySelectorAll('.phase-el').forEach(el => {
+    const elPhase = parseInt(el.getAttribute('data-phase'));
+    if (elPhase <= currentPhase) {
+      revealElement(el);
+    } else {
+      hideElement(el);
+    }
+  });
+  updatePhaseIndicator();
+}
+
+function updatePhaseIndicator() {
+  const label = document.getElementById('phaseLabel');
+  const dots = [document.getElementById('pd1'), document.getElementById('pd2'), document.getElementById('pd3')];
+  if (!phasedSlides.has(currentSlide)) {
+    label.textContent = currentSlide === 0 ? 'INTRO' : 'SUMMARY';
+    label.style.color = '#7b9dff';
+    dots.forEach(d => d.classList.remove('active'));
+    return;
+  }
+  const labels = ['ISSUE', 'REACTION', 'RESOLVE'];
+  const colors = ['#ff2d7b', '#ffcc00', '#4dff88'];
+  if (currentPhase === 0) {
+    label.textContent = 'READY';
+    label.style.color = '#7b9dff';
+    dots.forEach(d => d.classList.remove('active'));
+  } else {
+    label.textContent = labels[currentPhase - 1];
+    label.style.color = colors[currentPhase - 1];
+    dots.forEach((d, i) => {
+      if (i < currentPhase) d.classList.add('active');
+      else d.classList.remove('active');
+    });
+  }
+}
+
+function showSlide(n, showAll = false) {
   slides.forEach(s => s.classList.remove('active'));
   currentSlide = Math.max(0, Math.min(n, totalSlides - 1));
   slides[currentSlide].classList.add('active');
   document.getElementById('slideCounter').textContent = `${currentSlide + 1} / ${totalSlides}`;
   document.getElementById('progressBar').style.width = `${((currentSlide + 1) / totalSlides) * 100}%`;
+  setupPhases(currentSlide);
+  if (showAll && phasedSlides.has(currentSlide)) currentPhase = maxPhase;
+  updatePhaseVisibility();
   initAnimation(currentSlide);
 }
 
-function nextSlide() { showSlide(currentSlide + 1); }
-function prevSlide() { showSlide(currentSlide - 1); }
+function nextStep() {
+  if (phasedSlides.has(currentSlide) && currentPhase < maxPhase) {
+    currentPhase++;
+    showPhaseAnnounce(currentPhase);
+    updatePhaseVisibility();
+  } else {
+    showSlide(currentSlide + 1);
+  }
+}
+
+function prevStep() {
+  if (phasedSlides.has(currentSlide) && currentPhase > 0) {
+    currentPhase--;
+    updatePhaseVisibility();
+  } else {
+    showSlide(currentSlide - 1, true);
+  }
+}
 
 document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
-  if (e.key === 'ArrowLeft') prevSlide();
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextStep(); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); prevStep(); }
 });
 
 // ============ NEURAL NETWORK BACKGROUND ============
